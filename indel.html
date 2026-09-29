@@ -1,0 +1,1471 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2022.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+    span.s1 {font: 12.0px 'Apple Color Emoji'}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Balloon Pop Blaster - Chaos Edition&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Tailwind CSS for modern UI styling --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Google Fonts: Inter &amp; Fredoka for playful arcade typography --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&amp;family=Inter:wght@400;600;800&amp;display=swap" rel="stylesheet"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Inter', sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>touch-action: manipulation;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>user-select: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>-webkit-user-select: none;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.arcade-font {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Fredoka', cursive;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes punchShake {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>0% { transform: translate(0, 0) rotate(0deg); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>20% { transform: translate(-10px, 5px) rotate(-5deg); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>40% { transform: translate(10px, -5px) rotate(5deg); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>60% { transform: translate(-5px, -8px) rotate(-3deg); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>80% { transform: translate(5px, 5px) rotate(2deg); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>100% { transform: translate(0, 0) rotate(0deg); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.shake {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>animation: punchShake 0.3s ease-in-out;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes floatUp {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>0% { transform: translateY(0px) scale(0.8); opacity: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>20% { opacity: 1; transform: translateY(-20px) scale(1.2); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>100% { transform: translateY(-80px) scale(1); opacity: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.floating-text {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>pointer-events: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>animation: floatUp 0.8s ease-out forwards;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 800;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-shadow: 2px 2px 0px rgba(0,0,0,0.8);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>z-index: 50;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes throwProjAnim {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>0% { transform: translate(0, 0) scale(0.5) rotate(0deg); opacity: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>25% { opacity: 1; transform: scale(1.3) rotate(var(--rot)); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>100% { transform: translate(var(--dx), var(--dy)) scale(1) rotate(var(--rot)); opacity: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.flying-projectile {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>pointer-events: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>animation: throwProjAnim 0.3s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 28px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>z-index: 60;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes handWindupThrow {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>0% { transform: translateX(-50%) rotate(0deg) scale(1); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>25% { transform: translateX(-50%) translateY(12px) rotate(calc(var(--hand-rot) * -0.3)) scale(0.9); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>55% { transform: translateX(-50%) translateY(-22px) rotate(var(--hand-rot)) scale(1.25); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>100% { transform: translateX(-50%) rotate(0deg) scale(1); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.hand-throwing {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>animation: handWindupThrow 0.3s ease-out forwards;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes petHover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>0%, 100% { transform: translateY(0px); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>50% { transform: translateY(-6px); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.pet-floating {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>animation: petHover 2s ease-in-out infinite;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes slideInBanner {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>0% { transform: translateX(-100%) scale(0.9); opacity: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>20% { transform: translateX(0) scale(1.05); opacity: 1; }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>80% { transform: translateX(0) scale(1); opacity: 1; }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>100% { transform: translateX(100%) scale(0.9); opacity: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.boss-warning-banner {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>animation: slideInBanner 2.2s ease-in-out forwards;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.frozen-screen {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: inset 0 0 60px rgba(147, 197, 253, 0.9);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: #93c5fd !important;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.frenzy-screen {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: inset 0 0 60px rgba(239, 68, 68, 0.9);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: #ef4444 !important;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.chronos-screen {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: inset 0 0 60px rgba(168, 85, 247, 0.9);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: #a855f7 !important;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>::-webkit-scrollbar {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>::-webkit-scrollbar-track {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #1e1b4b;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 4px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>::-webkit-scrollbar-thumb {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #4f46e5;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 4px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body class="bg-slate-950 text-white min-h-screen flex flex-col items-center justify-between overflow-x-hidden"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Top Header &amp; Stats Bar --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;header class="w-full max-w-4xl bg-slate-900/85 backdrop-blur-md border-b border-slate-800 p-4 flex flex-wrap justify-between items-center shadow-lg z-10 rounded-b-2xl"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flex items-center gap-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="bg-indigo-600 p-2.5 rounded-xl shadow-inner border border-indigo-400"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h1 class="arcade-font text-2xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-indigo-400"&gt;BALLOON POP BLASTER&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-xs text-slate-400"&gt;Pets &amp; Bosses Chaos Edition&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flex items-center gap-3 mt-2 sm:mt-0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Active Pet Display Badges --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="activePetsContainer" class="flex gap-1.5"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- HP / Hearts Display with Pause &amp; New Game buttons right next to it --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="bg-slate-800/90 px-3 py-2 rounded-xl border border-slate-700 text-center flex items-center gap-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="flex flex-col items-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span class="text-[10px] text-slate-400 block arcade-font uppercase"&gt;HP (10 Max)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div id="hpDisplay" class="flex gap-0.5 mt-0.5 text-red-500 font-bold text-xs"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span><span class="s1">❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️</span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="flex gap-1.5 border-l border-slate-700 pl-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onclick="togglePauseGame()" id="pauseBtn" class="bg-amber-600 hover:bg-amber-500 text-white arcade-font text-xs px-2.5 py-1.5 rounded-lg transition-all cursor-pointer shadow"&gt;Pause&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onclick="restartGame()" class="bg-emerald-600 hover:bg-emerald-500 text-white arcade-font text-xs px-2.5 py-1.5 rounded-lg transition-all cursor-pointer shadow"&gt;New Game&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Score, High Score &amp; Level --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="bg-slate-800/90 px-3 py-2 rounded-xl border border-slate-700 text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="text-[10px] text-slate-400 block arcade-font uppercase"&gt;Score / Hi-Score&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="arcade-font text-sm text-indigo-300"&gt;Lv.&lt;span id="levelDisplay"&gt;1&lt;/span&gt;&lt;/span&gt; |<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span id="scoreDisplay" class="arcade-font text-base text-yellow-400"&gt;0&lt;/span&gt;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="text-xs text-slate-400"&gt;(Hi: &lt;span id="highScoreDisplay" class="text-yellow-200"&gt;0&lt;/span&gt;)&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Coins --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="bg-slate-800/90 px-3 py-2 rounded-xl border border-slate-700 text-center flex items-center gap-1.5"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="w-4 h-4 rounded-full bg-yellow-500 border border-yellow-300 flex items-center justify-center text-[10px] font-bold text-slate-950"&gt;$&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span class="text-[10px] text-slate-400 block arcade-font uppercase text-left"&gt;Coins&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;span id="coinsDisplay" class="arcade-font text-lg text-yellow-300"&gt;0&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Combo Meter --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="comboContainer" class="hidden bg-gradient-to-r from-amber-500 to-red-500 px-3 py-1.5 rounded-xl border border-yellow-300 animate-pulse text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span class="text-[9px] text-white block arcade-font uppercase font-bold"&gt;Combo!&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span id="comboDisplay" class="arcade-font text-base text-white"&gt;x1&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Main Game Arena --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;main class="relative w-full max-w-4xl flex-grow flex flex-col items-center justify-center p-4"&gt;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- On-Screen Active Skill Selector Bar --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="w-full bg-slate-900/90 backdrop-blur-md border border-slate-800 p-2.5 rounded-2xl mb-3 flex flex-wrap items-center justify-between gap-2 shadow-lg z-20"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="text-xs arcade-font text-indigo-400 uppercase tracking-wider px-2"&gt;<span class="s1">⚡</span> Active Skill Bar:&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="activeSkillBar" class="flex items-center gap-2 flex-wrap"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="gameArena" class="relative w-full h-[440px] sm:h-[500px] bg-gradient-to-b from-indigo-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-indigo-500/30 shadow-2xl overflow-hidden flex flex-col items-center justify-center select-none transition-all duration-300"&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Background floating ambient particles --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#6366f1_1px,transparent_1px)] [background-size:24px_24px]"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Boss Incoming Warning Banner Overlay --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="bossWarningOverlay" class="absolute inset-0 bg-red-950/40 backdrop-blur-[2px] z-50 flex items-center justify-center pointer-events-none hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="boss-warning-banner bg-red-900/90 border-4 border-yellow-400 text-yellow-200 px-8 py-5 rounded-2xl shadow-[0_0_60px_rgba(239,68,68,0.9)] arcade-font text-2xl sm:text-3xl tracking-wider text-center uppercase"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span><span class="s1">🔥</span> BIG BAD BOSS INCOMING! <span class="s1">💀</span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Active Floating Text container --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="floatingTextContainer" class="absolute inset-0 pointer-events-none overflow-hidden z-40"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Projectile effect container --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="projectileContainer" class="absolute inset-0 pointer-events-none overflow-hidden z-50"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Dynamic Balloon Spawn Layer --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="balloonLayer" class="absolute inset-0 pointer-events-none z-30 overflow-hidden"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Active Power Indicator Banner --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="activePowerBanner" class="absolute top-4 bg-indigo-600/90 border border-indigo-400 text-white font-bold px-4 py-1.5 rounded-full shadow-lg text-xs uppercase tracking-wider transition-all opacity-0 pointer-events-none z-30"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>Power Active!</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Active Pets Visual Render Layer moved to Bottom-Left Corner --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="arenaPetsLayer" class="absolute bottom-4 left-4 flex flex-col gap-2 pointer-events-none z-40"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Throwing Hand Character at Bottom Center --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="throwingHand" class="absolute bottom-2 left-1/2 -translate-x-1/2 text-5xl pointer-events-none z-40 drop-shadow-[0_12px_12px_rgba(0,0,0,0.7)] transition-transform origin-bottom"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span><span class="s1">🦾</span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Instructions Overlay --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="absolute bottom-2 right-4 bg-slate-900/75 backdrop-blur-sm border border-slate-700/50 px-3 py-1 rounded-full text-[11px] text-slate-300 pointer-events-none z-20 text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span><span class="s1">🦾</span> Up to 2 pets active | Every 15 Lvls: Balloons gain +1 HP! <span class="s1">🎈</span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Pause Screen Overlay --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="pauseOverlay" class="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 text-center hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-slate-900 border-2 border-amber-500/60 p-8 rounded-3xl shadow-2xl max-w-sm w-full space-y-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 class="arcade-font text-3xl text-amber-400"&gt;GAME PAUSED&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-slate-300 text-xs"&gt;Take a breather! Click resume when ready.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onclick="togglePauseGame()" class="w-full bg-amber-600 hover:bg-amber-500 text-white arcade-font py-3 rounded-xl shadow-lg transition-all border border-amber-400 cursor-pointer text-base"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>Resume Game <span class="s1">▶️</span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Game Over Screen Overlay --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="gameOverOverlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 text-center hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="bg-slate-900 border-2 border-red-500/60 p-8 rounded-3xl shadow-2xl max-w-md w-full space-y-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 class="arcade-font text-4xl text-red-500 animate-pulse"&gt;GAME OVER&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p class="text-slate-300 text-sm"&gt;Your HP reached 0! Too many escaping balloons breached your defense.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 flex justify-around"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-xs text-slate-400 block uppercase"&gt;Final Score&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span id="finalScore" class="arcade-font text-2xl text-yellow-400"&gt;0&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-xs text-slate-400 block uppercase"&gt;Coins Earned&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span id="finalCoins" class="arcade-font text-2xl text-yellow-300"&gt;0&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onclick="restartGame()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white arcade-font py-3 rounded-xl shadow-lg transition-all border border-indigo-400 cursor-pointer text-lg"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>Play Again <span class="s1">🚀</span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Control Navigation --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;nav class="w-full max-w-4xl bg-slate-900/90 backdrop-blur-md border-t border-slate-800 p-4 flex flex-wrap justify-center items-center gap-3 rounded-t-2xl z-10"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="openShopModal()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white arcade-font px-5 py-2.5 rounded-xl shadow-lg transition-all border border-indigo-400 active:scale-95 cursor-pointer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>Upgrades, Pets &amp; Skills Shop</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="toggleAudio()" id="soundToggleBtn" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white arcade-font px-4 py-2.5 rounded-xl shadow-lg transition-all border border-slate-600 active:scale-95 cursor-pointer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;span id="soundIcon"&gt;<span class="s1">🔊</span>&lt;/span&gt; Sound: ON</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/nav&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Shop Modal Dialog --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="modalOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="bg-slate-900 border-2 border-indigo-500/50 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="bg-slate-800 p-4 border-b border-slate-700 flex justify-between items-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h3 class="arcade-font text-xl text-yellow-400 flex items-center gap-2"&gt;<span class="s1">🛒</span> Shop, Pets &amp; Skills&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center font-bold transition-all cursor-pointer"&gt;&amp;times;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="p-6 overflow-y-auto flex-grow space-y-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- Companion Pets Section --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h4 class="text-xs uppercase arcade-font text-purple-400 mb-2 font-bold tracking-wider"&gt;Companion Pets System (Max 2 Active)&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="petsList"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h4 class="text-xs uppercase arcade-font text-indigo-400 mb-2 font-bold tracking-wider"&gt;Projectile Skins&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="grid grid-cols-2 gap-3" id="skinsList"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h4 class="text-xs uppercase arcade-font text-indigo-400 mb-2 font-bold tracking-wider"&gt;Combat Upgrades &amp; Skill Levels&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div id="upgradesList" class="space-y-3"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="bg-slate-800/80 p-4 border-t border-slate-700 text-right"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onclick="closeModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white arcade-font px-6 py-2 rounded-xl transition-all cursor-pointer"&gt;Resume Game&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Ad Watch Simulation Modal --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="adModalOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-60 flex items-center justify-center p-4 hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="bg-slate-900 border-2 border-yellow-400 w-full max-w-sm rounded-3xl shadow-2xl p-6 text-center space-y-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h3 class="arcade-font text-2xl text-yellow-400"&gt;<span class="s1">📺</span> Watch Ad for Pet&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;p id="adModalText" class="text-sm text-slate-300"&gt;Watch a short sponsored video to unlock this powerful Ad-Exclusive Pet!&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex items-center justify-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;span id="adTimerDisplay" class="arcade-font text-3xl text-indigo-400"&gt;Ad playing... 3s&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="adButtonsContainer" class="hidden flex gap-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onclick="finishWatchingAd()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white arcade-font py-2.5 rounded-xl transition-all font-bold"&gt;Claim Pet! <span class="s1">🎉</span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button onclick="closeAdModal()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2.5 rounded-xl arcade-font"&gt;Cancel&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Game State Variables</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let score = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let highScore = parseInt(localStorage.getItem('balloonHighScore')) || 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let coins = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let hp = 10;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const maxHp = 10;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let level = 1;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let combo = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let comboTimer = null;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let soundEnabled = true;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let isGameOver = false;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let isPaused = false;<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Upgrades &amp; Skills Levels</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let projectileDamage = 1;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let coinMultiplier = 1;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let autoPopperLevel = 0;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let skillChainLightningLevel = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let skillGravityVortexLevel = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let skillSonicBoomLevel = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let skillChronoRiftLevel = 0;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let selectedActiveSkillId = 'skill_lightning';<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let currentSkinId = 'needle';<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let activePetIds = [];<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let pendingAdPetId = null;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const pets = [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'sparky', name: 'Sparky', title: 'Electro-Sprite', icon: '<span class="s1">⚡</span>', desc: 'Zaps a random balloon every 3s', unlocked: false, price: 200, isAd: false },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'midas', name: 'Midas', title: 'Golden Cat', icon: '<span class="s1">🪙</span>', desc: 'Generates +5 coins every 4s', unlocked: false, price: 250, isAd: false },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'buster', name: 'Buster', title: 'Popper Pup', icon: '<span class="s1">🐾</span>', desc: 'Snipes lowest-HP balloon every 2.5s', unlocked: false, price: 300, isAd: false },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'ad_pixel', name: 'Pixel Dragon', title: 'Ad-Guardian', icon: '<span class="s1">🐉</span>', desc: 'Stronger: Zaps balloons faster every 2s', unlocked: false, isAd: true, adViewsRequired: 1 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'ad_phoenix', name: 'Solar Phoenix', title: 'Ad-Flame', icon: '<span class="s1">🔥</span>', desc: 'Stronger: Snipes 2 lowest-HP balloons every 2s', unlocked: false, isAd: true, adViewsRequired: 1 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'ad_quantum', name: 'Quantum Bot', title: 'Ad-Tech', icon: '<span class="s1">🤖</span>', desc: 'Stronger: Generates +12 coins every 3s', unlocked: false, isAd: true, adViewsRequired: 1 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'ad_titan', name: 'Titan Golem', title: 'Ad-Behemoth', icon: '<span class="s1">🗿</span>', desc: 'Stronger: Crushes random balloon &amp; shields HP', unlocked: false, isAd: true, adViewsRequired: 1 }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const skins = [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'needle', name: 'Needle Skin', icon: '<span class="s1">📍</span>', desc: 'Swift piercing needles', unlocked: true, price: 0 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'rock', name: 'Heavy Rock Skin', icon: '<span class="s1">🪨</span>', desc: 'Crushing boulders with deep impacts', unlocked: false, price: 150 }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let upgrades = [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'damage', name: 'Throw Power Upgrade', desc: 'Increases projectile damage dealt per hit', cost: 60, level: 1, costMult: 1.8 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'coin', name: 'Coin Magnet', desc: 'Boosts coin rewards from special balloons', cost: 100, level: 1, costMult: 2.0 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'autopilot', name: 'Auto-Thrower Drone', desc: 'Automatically throws projectiles periodically', cost: 300, level: 0, costMult: 2.2 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'skill_lightning', name: '<span class="s1">⚡</span> Chain Lightning', desc: 'Arcs lightning to zap nearby balloons automatically!', cost: 120, level: 0, costMult: 1.9, maxLvl: 5 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'skill_vortex', name: '<span class="s1">🧲</span> Gravity Vortex', desc: 'Pulls nearby balloons into a tight center cluster!', cost: 140, level: 0, costMult: 2.0, maxLvl: 5 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'skill_sonic', name: '<span class="s1">🌀</span> Sonic Boom', desc: 'Releases a shockwave stripping HP from all balloons!', cost: 160, level: 0, costMult: 2.1, maxLvl: 5 },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'skill_chrono', name: '<span class="s1">⏳</span> Chrono-Rift', desc: 'Creates a time dilation zone slowing enemy movement!', cost: 200, level: 0, costMult: 2.2, maxLvl: 5 }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Web Audio Synthesizer</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const audioCtx = new (window.AudioContext || window.webkitAudioContext)();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function playSound(type) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!soundEnabled) return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (audioCtx.state === 'suspended') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>audioCtx.resume();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const osc = audioCtx.createOscillator();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const gainNode = audioCtx.createGain();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>osc.connect(gainNode);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gainNode.connect(audioCtx.destination);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const now = audioCtx.currentTime;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (type === 'pop') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.type = 'triangle';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.setValueAtTime(400, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.exponentialRampToValueAtTime(950, now + 0.15);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.setValueAtTime(0.3, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.start(now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.stop(now + 0.15);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (type === 'stab') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.type = 'square';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.setValueAtTime(currentSkinId === 'rock' ? 120 : 250, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.exponentialRampToValueAtTime(currentSkinId === 'rock' ? 40 : 100, now + 0.08);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.setValueAtTime(0.25, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.08);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.start(now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.stop(now + 0.08);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (type === 'coin') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.type = 'sine';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.setValueAtTime(900, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.setValueAtTime(1300, now + 0.08);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.setValueAtTime(0.25, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.start(now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.stop(now + 0.2);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (type === 'airleak') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.type = 'sawtooth';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.setValueAtTime(600, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.linearRampToValueAtTime(200, now + 0.2);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.setValueAtTime(0.2, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.start(now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.stop(now + 0.2);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (type === 'bomb') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.type = 'sawtooth';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.setValueAtTime(120, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.linearRampToValueAtTime(30, now + 0.4);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.setValueAtTime(0.5, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.start(now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.stop(now + 0.4);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (type === 'freeze') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.type = 'sine';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.setValueAtTime(1100, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.linearRampToValueAtTime(400, now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.setValueAtTime(0.3, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.start(now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.stop(now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (type === 'laser') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.type = 'sawtooth';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.setValueAtTime(800, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.linearRampToValueAtTime(150, now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.setValueAtTime(0.35, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.start(now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.stop(now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (type === 'heal') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.type = 'sine';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.setValueAtTime(500, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.exponentialRampToValueAtTime(1000, now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.setValueAtTime(0.3, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.start(now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.stop(now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (type === 'damage') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.type = 'sawtooth';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.setValueAtTime(200, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.frequency.linearRampToValueAtTime(80, now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.setValueAtTime(0.4, now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.start(now);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>osc.stop(now + 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function toggleAudio() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>soundEnabled = !soundEnabled;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const btn = document.getElementById('soundToggleBtn');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const icon = document.getElementById('soundIcon');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (soundEnabled) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon.textContent = '<span class="s1">🔊</span>';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>btn.innerHTML = '&lt;span id="soundIcon"&gt;<span class="s1">🔊</span>&lt;/span&gt; Sound: ON';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>icon.textContent = '<span class="s1">🔇</span>';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>btn.innerHTML = '&lt;span id="soundIcon"&gt;<span class="s1">🔇</span>&lt;/span&gt; Sound: OFF';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function togglePauseGame() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isGameOver) return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>isPaused = !isPaused;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const pauseOverlay = document.getElementById('pauseOverlay');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const pauseBtn = document.getElementById('pauseBtn');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isPaused) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>pauseOverlay.classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>pauseBtn.textContent = 'Resume';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>pauseOverlay.classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>pauseBtn.textContent = 'Pause';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const balloonTypes = [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'standard', name: 'Neon Rose', color: 'bg-gradient-to-tr from-rose-500 via-pink-500 to-red-400 border-2 border-rose-200', shadow: 'shadow-[0_0_25px_rgba(244,63,94,0.9)]', score: 15, baseHp: 2, chance: 14, icon: '<span class="s1">🎈</span>', damageValue: 0.5, powerDesc: 'Standard balloon (0.5 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'airleak', name: 'Air-Leak Zipper', color: 'bg-gradient-to-tr from-lime-400 via-emerald-500 to-teal-600 border-2 border-lime-200', shadow: 'shadow-[0_0_25px_rgba(132,204,22,0.9)]', score: 45, baseHp: 1, chance: 10, icon: '<span class="s1">💨</span>', airLeak: true, speedMult: 1.8, damageValue: 0.5, powerDesc: 'Erratic air-leak zip! (0.5 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'turbo', name: 'Turbo Cyan', color: 'bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 border-2 border-cyan-200', shadow: 'shadow-[0_0_25px_rgba(6,182,212,0.9)]', score: 30, baseHp: 2, chance: 9, icon: '<span class="s1">🚀</span>', speedMult: 1.5, damageValue: 0.5, powerDesc: 'Fast speed balloon (0.5 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'gold', name: 'Solid Gold', color: 'bg-gradient-to-tr from-yellow-300 via-amber-400 to-yellow-600 border-2 border-yellow-100', shadow: 'shadow-[0_0_30px_rgba(250,204,21,1)]', score: 60, baseHp: 3, coins: 20, chance: 8, icon: '<span class="s1">🪙</span>', damageValue: 0.5, powerDesc: 'Gold Cache! (0.5 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'shield', name: 'Shielded Orb', color: 'bg-gradient-to-tr from-blue-300 via-indigo-600 to-slate-900 border-2 border-blue-200', shadow: 'shadow-[0_0_30px_rgba(96,165,250,1)]', score: 55, baseHp: 4, chance: 8, icon: '<span class="s1">🛡️</span>', damageValue: 0.5, powerDesc: 'Shielded armor layer (0.5 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'mystery', name: 'Mystery Box', color: 'bg-gradient-to-tr from-pink-400 via-purple-500 to-indigo-600 border-2 border-pink-200', shadow: 'shadow-[0_0_30px_rgba(236,72,153,1)]', score: 50, baseHp: 2, mystery: true, chance: 8, icon: '<span class="s1">🎁</span>', damageValue: 0.5, powerDesc: 'Random mystery reward! (0.5 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'freeze', name: 'Ice Crystal', color: 'bg-gradient-to-tr from-sky-200 via-blue-400 to-indigo-500 border-2 border-white', shadow: 'shadow-[0_0_30px_rgba(147,197,253,1)]', score: 40, baseHp: 3, freeze: true, chance: 7, icon: '<span class="s1">❄️</span>', speedMult: 0.6, damageValue: 0.5, powerDesc: 'Skill: Freezes the screen! (0.5 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'laser', name: 'Plasma Laser', color: 'bg-gradient-to-tr from-fuchsia-500 via-purple-600 to-violet-900 border-2 border-fuchsia-200', shadow: 'shadow-[0_0_30px_rgba(217,70,239,1)]', score: 75, baseHp: 3, laser: true, chance: 7, icon: '<span class="s1">⚡</span>', damageValue: 0.5, powerDesc: 'Skill: Fires laser chain! (0.5 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'heart', name: 'Healing Aura', color: 'bg-gradient-to-tr from-emerald-300 via-teal-500 to-green-600 border-2 border-emerald-100', shadow: 'shadow-[0_0_30px_rgba(52,211,153,1)]', score: 50, baseHp: 2, heal: true, chance: 6, icon: '<span class="s1">💖</span>', damageValue: 0.5, powerDesc: 'Skill: Restores +1 HP! (0.5 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'frenzy', name: 'Frenzy Spark', color: 'bg-gradient-to-tr from-amber-200 via-yellow-400 to-orange-500 border-2 border-yellow-100', shadow: 'shadow-[0_0_30px_rgba(252,211,77,1)]', score: 90, baseHp: 3, frenzy: true, chance: 5, icon: '<span class="s1">🔥</span>', damageValue: 0.5, powerDesc: 'Skill: Arena Frenzy! (0.5 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'bomb', name: 'Explosive Bomb', color: 'bg-gradient-to-tr from-zinc-900 via-red-950 to-black border-2 border-red-500', shadow: 'shadow-[0_0_25px_rgba(239,68,68,0.9)]', score: 40, baseHp: 1, bomb: true, chance: 6, icon: '<span class="s1">💣</span>', damageValue: 4.0, powerDesc: 'Bomb! Deals 4-6 health damage to all balloons' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'boss', name: 'Mega Sovereign Boss', color: 'bg-gradient-to-tr from-purple-800 via-indigo-950 to-amber-600 border-4 border-yellow-300', shadow: 'shadow-[0_0_50px_rgba(234,179,8,1)]', score: 450, baseHp: 8, coins: 80, chance: 4, icon: '<span class="s1">👑💀</span>', speedMult: 0.55, damageValue: 1.0, powerDesc: 'Mega Boss! (1.0 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'boss_prism', name: 'Prism Titan', color: 'bg-gradient-to-tr from-teal-300 via-cyan-500 to-blue-700 border-4 border-cyan-200', shadow: 'shadow-[0_0_55px_rgba(6,182,212,1)]', score: 600, baseHp: 12, coins: 110, chance: 3, icon: '<span class="s1">💎✨</span>', speedMult: 0.5, prism: true, damageValue: 1.0, powerDesc: 'Titan Boss! (1.0 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'boss_inferno', name: 'Inferno Overlord', color: 'bg-gradient-to-tr from-orange-600 via-red-700 to-amber-900 border-4 border-yellow-400', shadow: 'shadow-[0_0_55px_rgba(239,68,68,1)]', score: 750, baseHp: 15, coins: 140, chance: 2, icon: '<span class="s1">🔥👑</span>', speedMult: 0.45, inferno: true, damageValue: 1.0, powerDesc: 'Overlord Boss! (1.0 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'boss_void', name: 'Void Specter', color: 'bg-gradient-to-tr from-slate-900 via-purple-950 to-black border-4 border-purple-500', shadow: 'shadow-[0_0_55px_rgba(168,85,247,1)]', score: 700, baseHp: 10, coins: 130, chance: 3, icon: '<span class="s1">👻🌀</span>', speedMult: 0.6, voidSpec: true, damageValue: 1.0, powerDesc: 'Specter Boss! (1.0 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'boss_chronos', name: 'Chronos Timekeeper', color: 'bg-gradient-to-tr from-violet-600 via-indigo-900 to-amber-500 border-4 border-amber-300', shadow: 'shadow-[0_0_60px_rgba(245,158,11,1)]', score: 900, baseHp: 18, coins: 180, chance: 2, icon: '<span class="s1">⏳⚡</span>', speedMult: 0.4, chronos: true, damageValue: 1.0, powerDesc: 'Timekeeper Boss! (1.0 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'boss_hydra', name: 'Neon Hydra', color: 'bg-gradient-to-tr from-emerald-600 via-teal-900 to-lime-500 border-4 border-lime-300', shadow: 'shadow-[0_0_65px_rgba(132,204,22,1)]', score: 1200, baseHp: 24, coins: 250, chance: 0, requiredLevel: 15, hydra: true, speedMult: 0.38, damageValue: 1.0, powerDesc: 'Super Boss Hydra! (1.0 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'boss_singularity', name: 'Cosmic Singularity', color: 'bg-gradient-to-tr from-indigo-900 via-fuchsia-950 to-slate-950 border-4 border-fuchsia-400', shadow: 'shadow-[0_0_75px_rgba(217,70,239,1)]', score: 2000, baseHp: 35, coins: 400, chance: 0, requiredLevel: 25, singularity: true, speedMult: 0.32, damageValue: 1.0, powerDesc: 'Super Boss Singularity! (1.0 HP dmg)' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 'boss_dreadnought', name: 'Astral Dreadnought', color: 'bg-gradient-to-tr from-red-900 via-zinc-900 to-amber-950 border-4 border-red-400', shadow: 'shadow-[0_0_85px_rgba(239,68,68,1)]', score: 3500, baseHp: 55, coins: 650, chance: 0, requiredLevel: 45, dreadnought: true, speedMult: 0.28, shieldArmor: true, damageValue: 1.0, powerDesc: 'Super Boss Dreadnought with Shield! (1.0 HP dmg)' }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let warningTriggeredForLevel15 = false;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let warningTriggeredForLevel25 = false;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let warningTriggeredForLevel45 = false;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function checkLevelMilestones() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>level = Math.floor(score / 300) + 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('levelDisplay').textContent = level;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (level &gt;= 15 &amp;&amp; !warningTriggeredForLevel15) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>warningTriggeredForLevel15 = true;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showBossWarningBanner("<span class="s1">🔥</span> LEVEL 15: BIG BAD NEON HYDRA! <span class="s1">💀</span>");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; spawnSpecificBoss('boss_hydra'), 2200);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (level &gt;= 25 &amp;&amp; !warningTriggeredForLevel25) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>warningTriggeredForLevel25 = true;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showBossWarningBanner("<span class="s1">🔥</span> LEVEL 25: BIG BAD COSMIC SINGULARITY! <span class="s1">💀</span>");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; spawnSpecificBoss('boss_singularity'), 2200);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (level &gt;= 45 &amp;&amp; !warningTriggeredForLevel45) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>warningTriggeredForLevel45 = true;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showBossWarningBanner("<span class="s1">🔥</span> LEVEL 45: ASTRAL DREADNOUGHT SUPER BOSS! <span class="s1">💀</span>");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; spawnSpecificBoss('boss_dreadnought'), 2200);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function showBossWarningBanner(msg) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const overlay = document.getElementById('bossWarningOverlay');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const banner = overlay.querySelector('div');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>banner.textContent = msg;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overlay.classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>overlay.classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}, 2200);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function spawnSpecificBoss(bossId) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isGameOver || isPaused) return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const bossData = balloonTypes.find(b =&gt; b.id === bossId);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (bossData) createBalloonElement(bossData);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function spawnBalloon() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isGameOver || isPaused) return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>checkLevelMilestones();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let availablePool = balloonTypes.filter(b =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (b.requiredLevel) return level &gt;= b.requiredLevel;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>return true;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let rand = Math.random() * 100;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let cumulative = 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let selectedType = availablePool[0];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>for (let b of availablePool) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>cumulative += (b.chance || 4);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (rand &lt;= cumulative) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>selectedType = b;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>createBalloonElement(selectedType);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function getBalloonBonusHP(currentLevel) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>return Math.floor(currentLevel / 15);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function createBalloonElement(selectedType) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const layer = document.getElementById('balloonLayer');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const arena = document.getElementById('gameArena');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!layer || !arena) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const balloon = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const isHighBoss = selectedType.id.startsWith('boss');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const size = isHighBoss ? 160 : (Math.random() * 24 + 48);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const posX = Math.random() * (arena.clientWidth - 160) + 10;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloon.className = `absolute rounded-full cursor-pointer flex flex-col items-center justify-center transition-transform duration-100 select-none pointer-events-auto ${selectedType.color} ${selectedType.shadow}`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloon.style.width = `${size}px`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloon.style.height = `${size * 1.35}px`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloon.style.left = `${posX}px`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloon.style.bottom = `-180px`;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const stringElem = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>stringElem.className = 'absolute -bottom-4 w-0.5 h-6 bg-slate-300/80 pointer-events-none';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloon.appendChild(stringElem);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let bonusHp = getBalloonBonusHP(level);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let currentHp = selectedType.baseHp + bonusHp;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const hpBadge = document.createElement('span');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>hpBadge.className = 'absolute -top-3.5 bg-slate-900/95 text-yellow-300 font-extrabold text-xs px-2.5 py-0.5 rounded-full border border-yellow-400/80 balloon-hp z-10 shadow-md';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>hpBadge.textContent = `${currentHp}HP`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloon.appendChild(hpBadge);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isHighBoss) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const nameLabel = document.createElement('span');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>nameLabel.className = 'bg-purple-950/90 text-yellow-300 font-extrabold text-xs px-2.5 py-1 rounded-md border-2 border-yellow-400/80 text-center max-w-[92%] shadow-lg z-10 arcade-font my-1';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>nameLabel.textContent = selectedType.name;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>balloon.appendChild(nameLabel);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const iconBadge = document.createElement('span');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>iconBadge.className = `${isHighBoss ? 'text-3xl' : 'text-lg'} font-bold drop-shadow-md pointer-events-none my-0.5`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>iconBadge.textContent = selectedType.icon;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloon.appendChild(iconBadge);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (selectedType.shieldArmor) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const shieldBadge = document.createElement('span');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>shieldBadge.className = 'text-[10px] bg-red-900/95 text-yellow-300 font-bold px-2 py-0.5 rounded border border-yellow-400 mt-0.5 uppercase tracking-wider';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>shieldBadge.textContent = '<span class="s1">🛡️</span> Shielded';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>balloon.appendChild(shieldBadge);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let voidInterval = null;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (selectedType.voidSpec) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>voidInterval = setInterval(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (!balloon.parentNode || isGameOver || isPaused) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>clearInterval(voidInterval);</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>balloon.style.opacity = '0.2';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>setTimeout(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (isPaused) return;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const newX = Math.random() * (arena.clientWidth - 160) + 10;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>balloon.style.left = `${newX}px`;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>balloon.style.opacity = '1';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}, 400);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}, 3500);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let leakInterval = null;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (selectedType.airLeak) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('airleak');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>leakInterval = setInterval(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (!balloon.parentNode || isGameOver || isPaused) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>clearInterval(leakInterval);</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const jitter = (Math.random() - 0.5) * 120;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const currentLeft = parseFloat(balloon.style.left || '100');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const newLeft = Math.max(10, Math.min(arena.clientWidth - 160, currentLeft + jitter));</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>balloon.style.left = `${newLeft}px`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}, 300);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const handlePopAction = (e, isPetOrAuto = false) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (e &amp;&amp; e.stopPropagation) e.stopPropagation();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (e &amp;&amp; e.preventDefault) e.preventDefault();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (isGameOver || isPaused) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const clientX = e &amp;&amp; e.clientX ? e.clientX : (balloon.getBoundingClientRect().left + 40);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const clientY = e &amp;&amp; e.clientY ? e.clientY : (balloon.getBoundingClientRect().top + 40);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (!isPetOrAuto) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>triggerThrowingHandAndProjectile(clientX, clientY);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>triggerSilentProjectile(clientX, clientY);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>currentHp -= projectileDamage;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (currentHp &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>playSound('stab');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const hpElem = balloon.querySelector('.balloon-hp');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (hpElem) hpElem.textContent = `${currentHp}HP`;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>balloon.style.transform = 'scale(0.88) rotate(-5deg)';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>setTimeout(() =&gt; balloon.style.transform = 'scale(1) rotate(0deg)', 90);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>showFloatingText(`-${projectileDamage} HP`, clientX, clientY, "text-yellow-300");</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (voidInterval) clearInterval(voidInterval);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (leakInterval) clearInterval(leakInterval);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>popBalloon(balloon, selectedType, clientX, clientY);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloon.addEventListener('click', (e) =&gt; handlePopAction(e, false));</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// _popByPet ensures pets and drones never trigger the player throwing-hand animation</p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloon._popByPet = (clientX, clientY) =&gt; handlePopAction({ clientX, clientY }, true);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>layer.appendChild(balloon);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let speedMultiplier = (selectedType.speedMult || 1.0) * 0.88;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (skillChronoRiftLevel &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>speedMultiplier *= (1 - (skillChronoRiftLevel * 0.12));</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const duration = (Math.random() * 4 + 8) / Math.max(0.2, speedMultiplier);<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const animation = balloon.animate([</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ transform: `translateY(0px)` },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ transform: `translateY(-${arena.clientHeight + 180}px)` }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>], {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>duration: duration * 1000,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>easing: 'linear'</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const checkPauseInterval = setInterval(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (isGameOver || !balloon.parentNode) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>clearInterval(checkPauseInterval);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (isPaused) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>animation.pause();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>animation.play();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}, 100);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>animation.onfinish = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>clearInterval(checkPauseInterval);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (voidInterval) clearInterval(voidInterval);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (leakInterval) clearInterval(leakInterval);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (balloon.parentNode &amp;&amp; !isGameOver &amp;&amp; !isPaused) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>balloon.remove();</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>damagePlayerHP(selectedType.damageValue || 0.5);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>};</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function useActiveSkill(skillId) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isGameOver || isPaused) return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const arena = document.getElementById('gameArena');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const layer = document.getElementById('balloonLayer');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!arena || !layer) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const centerX = arena.clientWidth / 2;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const centerY = arena.clientHeight / 2;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (skillId === 'skill_lightning' &amp;&amp; skillChainLightningLevel &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('laser');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`<span class="s1">⚡</span> Chain Lightning Activated!`, centerX, centerY, "text-cyan-300");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const allBalloons = layer.querySelectorAll('.absolute.rounded-full');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let count = 0;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>allBalloons.forEach(b =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (count &lt; (skillChainLightningLevel + 2)) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>count++;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>setTimeout(() =&gt; {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                            </span>if (b.parentNode &amp;&amp; !isPaused) {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>const rect = b.getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>if (b._popByPet) b._popByPet(rect.left + 20, rect.top + 20);</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>else b.click();</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>}<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}, count * 80);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (skillId === 'skill_vortex' &amp;&amp; skillGravityVortexLevel &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('freeze');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`<span class="s1">🧲</span> Gravity Vortex Pull!`, centerX, centerY, "text-purple-400");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const allBalloons = layer.querySelectorAll('.absolute.rounded-full');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>allBalloons.forEach(b =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>b.style.left = `${centerX + (Math.random() - 0.5) * 80}px`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (skillId === 'skill_sonic' &amp;&amp; skillSonicBoomLevel &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('bomb');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`<span class="s1">🌀</span> Sonic Boom Shockwave!`, centerX, centerY, "text-amber-300");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const allBalloons = layer.querySelectorAll('.absolute.rounded-full');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>allBalloons.forEach(b =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const hpBadge = b.querySelector('.balloon-hp');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (hpBadge) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>let hpText = parseInt(hpBadge.textContent) || 1;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>hpText = Math.max(1, hpText - skillSonicBoomLevel);</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>hpBadge.textContent = `${hpText}HP`;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (skillId === 'skill_chrono' &amp;&amp; skillChronoRiftLevel &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('freeze');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`<span class="s1">⏳</span> Chrono-Rift Time Dilation!`, centerX, centerY, "text-amber-400");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>arena.classList.add('chronos-screen');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; arena.classList.remove('chronos-screen'), 3000);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`<span class="s1">🔒</span> Upgrade skill in shop first!`, centerX, centerY, "text-red-400");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function triggerThrowingHandAndProjectile(targetX, targetY) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const arena = document.getElementById('gameArena');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const hand = document.getElementById('throwingHand');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const container = document.getElementById('projectileContainer');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!arena || !hand || !container) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const arenaRect = arena.getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const startX = arenaRect.width / 2;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const startY = arenaRect.height - 35;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const endX = targetX - arenaRect.left;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const endY = targetY - arenaRect.top;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const dx = endX - startX;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const dy = endY - startY;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const angleRad = Math.atan2(dy, dx);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const angleDeg = (angleRad * 180) / Math.PI + 90;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>hand.style.setProperty('--hand-rot', `${angleDeg * 0.45}deg`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>hand.classList.remove('hand-throwing');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>void hand.offsetWidth;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>hand.classList.add('hand-throwing');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const proj = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.className = 'flying-projectile';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.style.left = `${startX - 14}px`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.style.top = `${startY - 35}px`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.style.setProperty('--dx', `${dx}px`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.style.setProperty('--dy', `${dy}px`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.style.setProperty('--rot', `${angleDeg + 45}deg`);</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const activeSkin = skins.find(s =&gt; s.id === currentSkinId);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.textContent = activeSkin ? activeSkin.icon : '<span class="s1">📍</span>';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>container.appendChild(proj);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; proj.remove(), 300);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function triggerSilentProjectile(targetX, targetY) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const arena = document.getElementById('gameArena');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const container = document.getElementById('projectileContainer');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!arena || !container) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const arenaRect = arena.getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const startX = arenaRect.width / 2;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const startY = arenaRect.height - 35;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const endX = targetX - arenaRect.left;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const endY = targetY - arenaRect.top;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const dx = endX - startX;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const dy = endY - startY;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const angleRad = Math.atan2(dy, dx);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const angleDeg = (angleRad * 180) / Math.PI + 90;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const proj = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.className = 'flying-projectile';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.style.left = `${startX - 14}px`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.style.top = `${startY - 35}px`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.style.setProperty('--dx', `${dx}px`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.style.setProperty('--dy', `${dy}px`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.style.setProperty('--rot', `${angleDeg + 45}deg`);</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const activeSkin = skins.find(s =&gt; s.id === currentSkinId);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>proj.textContent = activeSkin ? activeSkin.icon : '<span class="s1">📍</span>';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>container.appendChild(proj);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; proj.remove(), 300);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function damagePlayerHP(amount) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isGameOver || isPaused) return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>hp = Math.max(0, hp - amount);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>playSound('damage');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>updateHUD();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const arena = document.getElementById('gameArena');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>arena.classList.add('shake');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; arena.classList.remove('shake'), 300);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>showFloatingText(`-${amount} <span class="s1">❤️</span>`, arena.clientWidth / 2, 60, "text-red-500");</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (hp &lt;= 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>triggerGameOver();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function popBalloon(balloonElem, typeData, clientX, clientY) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isGameOver || isPaused) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>showPowerBanner(typeData.name, typeData.powerDesc);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (typeData.bomb) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('bomb');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>combo += 2;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>score += typeData.score;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const bombDmg = Math.floor(Math.random() * 3) + 4;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`<span class="s1">💣</span> BOMB! -${bombDmg} HP to all!`, clientX, clientY, "text-red-400");</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const arena = document.getElementById('gameArena');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>arena.classList.add('frenzy-screen');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; arena.classList.remove('frenzy-screen'), 1200);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const layer = document.getElementById('balloonLayer');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (layer) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const allBalloons = layer.querySelectorAll('.absolute.rounded-full');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>allBalloons.forEach(b =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const hpBadge = b.querySelector('.balloon-hp');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (hpBadge) {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>let bHp = parseInt(hpBadge.textContent) || 1;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>bHp -= bombDmg;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>if (bHp &lt;= 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>b.style.transform = 'scale(1.4)';</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>b.style.opacity = '0';</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>setTimeout(() =&gt; b.remove(), 150);</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>hpBadge.textContent = `${bHp}HP`;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (typeData.mystery) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('coin');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>combo++;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const bonusCoins = 15 * coinMultiplier;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>coins += bonusCoins;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>score += typeData.score;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`<span class="s1">🎁</span> MYSTERY! +$${bonusCoins}`, clientX, clientY, "text-pink-300");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (typeData.freeze) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('freeze');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>combo++;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>score += typeData.score;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>coins += 5 * coinMultiplier;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`<span class="s1">❄️</span> FREEZE! +${typeData.score}`, clientX, clientY, "text-blue-300");</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const arena = document.getElementById('gameArena');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>arena.classList.add('frozen-screen');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; arena.classList.remove('frozen-screen'), 2000);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (typeData.laser) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('laser');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>combo += 2;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>score += typeData.score;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>coins += 10 * coinMultiplier;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const laserDmg = Math.floor(Math.random() * 3) + 2;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`<span class="s1">⚡</span> LASER BLAST! -${laserDmg} HP to all!`, clientX, clientY, "text-fuchsia-300");</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const layer = document.getElementById('balloonLayer');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (layer) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const allBalloons = layer.querySelectorAll('.absolute.rounded-full');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>allBalloons.forEach(b =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const hpBadge = b.querySelector('.balloon-hp');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (hpBadge) {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>let bHp = parseInt(hpBadge.textContent) || 1;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>bHp -= laserDmg;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>if (bHp &lt;= 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>b.style.transform = 'scale(1.4)';</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>b.style.opacity = '0';</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>setTimeout(() =&gt; b.remove(), 150);</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>hpBadge.textContent = `${bHp}HP`;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (typeData.heal) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('heal');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>combo++;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>hp = Math.min(maxHp, hp + 1);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>score += typeData.score;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`<span class="s1">💖</span> HEALED! +1 HP`, clientX, clientY, "text-emerald-300");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (typeData.frenzy) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('laser');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>combo += 3;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>score += typeData.score;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>coins += 15 * coinMultiplier;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`<span class="s1">🔥</span> CHAIN FRENZY! +${typeData.score}`, clientX, clientY, "text-amber-300");</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const arena = document.getElementById('gameArena');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>arena.classList.add('frenzy-screen');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; arena.classList.remove('frenzy-screen'), 1500);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const layer = document.getElementById('balloonLayer');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (layer) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const allBalloons = layer.querySelectorAll('.absolute.rounded-full');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>let poppedCount = 0;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>allBalloons.forEach(b =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (b !== balloonElem &amp;&amp; poppedCount &lt; 4) {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>poppedCount++;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>b.style.transform = 'scale(1.4)';</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>b.style.opacity = '0';</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>setTimeout(() =&gt; b.remove(), 150);</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('pop');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>combo++;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>clearTimeout(comboTimer);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>comboTimer = setTimeout(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (!isPaused) combo = 0;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>updateHUD();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}, 2500);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>let earnedScore = typeData.score + Math.floor(combo / 3) * 5;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let earnedCoins = (typeData.coins || 2) * coinMultiplier;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>score += earnedScore;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>coins += Math.round(earnedCoins);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>showFloatingText(`+${earnedScore}`, clientX, clientY, "text-yellow-400");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (typeData.coins) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>playSound('coin');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>checkHighScore();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>updateHUD();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloonElem.style.transform = 'scale(1.4)';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>balloonElem.style.opacity = '0';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (balloonElem.parentNode) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>balloonElem.remove();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}, 150);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function checkHighScore() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (score &gt; highScore) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>highScore = score;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>localStorage.setItem('balloonHighScore', highScore);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function showPowerBanner(title, desc) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const banner = document.getElementById('activePowerBanner');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!banner) return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>banner.textContent = `${title}: ${desc}`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>banner.style.opacity = '1';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>banner.style.opacity = '0';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}, 1800);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function showFloatingText(text, x, y, colorClass) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const container = document.getElementById('floatingTextContainer');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!container) return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const elem = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>elem.className = `floating-text arcade-font text-xl ${colorClass}`;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const rect = container.getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>elem.style.left = `${Math.max(10, Math.min(rect.width - 100, x - rect.left - 20))}px`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>elem.style.top = `${Math.max(10, Math.min(rect.height - 40, y - rect.top - 20))}px`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>elem.textContent = text;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>container.appendChild(elem);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; elem.remove(), 800);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function updateHUD() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('scoreDisplay').textContent = score;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('highScoreDisplay').textContent = highScore;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('coinsDisplay').textContent = coins;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('levelDisplay').textContent = level;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const hpContainer = document.getElementById('hpDisplay');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let heartsStr = '';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; maxHp; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (i &lt; Math.floor(hp)) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>heartsStr += '<span class="s1">❤️</span>';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (i &lt; hp) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>heartsStr += '<span class="s1">🧡</span>';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>heartsStr += '<span class="s1">🖤</span>';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>hpContainer.textContent = heartsStr;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const comboContainer = document.getElementById('comboContainer');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const comboDisplay = document.getElementById('comboDisplay');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (combo &gt; 1) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>comboContainer.classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>comboDisplay.textContent = `x${combo}`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>comboContainer.classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const activePetsContainer = document.getElementById('activePetsContainer');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>activePetsContainer.innerHTML = '';</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const arenaPetsLayer = document.getElementById('arenaPetsLayer');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>arenaPetsLayer.innerHTML = '';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (activePetIds.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>activePetIds.forEach(petId =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const petData = pets.find(p =&gt; p.id === petId);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (petData) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const badge = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>badge.className = 'bg-purple-900/85 border border-purple-400 px-2 py-1 rounded-lg flex items-center gap-1';</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>badge.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-xs"&gt;${petData.icon}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="arcade-font text-[9px] text-white"&gt;${petData.name}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>activePetsContainer.appendChild(badge);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>// Rendered neatly in the bottom-left corner of the arena</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const arenaPetElem = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>arenaPetElem.className = 'pet-floating bg-purple-950/90 border border-purple-400/80 px-2.5 py-1 rounded-xl shadow-[0_0_10px_rgba(168,85,247,0.5)] flex items-center gap-1.5 backdrop-blur-sm';</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>arenaPetElem.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="text-lg"&gt;${petData.icon}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="arcade-font text-[10px] text-yellow-300"&gt;${petData.name}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>arenaPetsLayer.appendChild(arenaPetElem);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderActiveSkillBar();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function renderActiveSkillBar() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const bar = document.getElementById('activeSkillBar');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!bar) return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bar.innerHTML = '';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const skillDefs = [</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ id: 'skill_lightning', name: 'Lightning', icon: '<span class="s1">⚡</span>', level: skillChainLightningLevel },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ id: 'skill_vortex', name: 'Vortex', icon: '<span class="s1">🧲</span>', level: skillGravityVortexLevel },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ id: 'skill_sonic', name: 'Sonic Boom', icon: '<span class="s1">🌀</span>', level: skillSonicBoomLevel },</p>
+<p class="p1"><span class="Apple-converted-space">                </span>{ id: 'skill_chrono', name: 'Chrono-Rift', icon: '<span class="s1">⏳</span>', level: skillChronoRiftLevel }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>skillDefs.forEach(s =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const isSelected = selectedActiveSkillId === s.id;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const isUnlocked = s.level &gt; 0;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const btn = document.createElement('button');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>btn.onclick = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>selectedActiveSkillId = s.id;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>renderActiveSkillBar();</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>useActiveSkill(s.id);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>};</p>
+<p class="p1"><span class="Apple-converted-space">                </span>btn.className = `px-3 py-1.5 rounded-xl border text-xs arcade-font flex items-center gap-1.5 transition-all cursor-pointer ${</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>isSelected ? 'bg-indigo-600 border-indigo-300 text-white shadow-md scale-105' :<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>isUnlocked ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-750' : 'bg-slate-900 border-slate-800 text-slate-500 opacity-60'</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>btn.innerHTML = `&lt;span&gt;${s.icon}&lt;/span&gt; &lt;span&gt;${s.name} ${isUnlocked ? '(Lv.' + s.level + ')' : '(Locked)'}&lt;/span&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bar.appendChild(btn);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function triggerGameOver() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>isGameOver = true;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>checkHighScore();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('finalScore').textContent = score;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('finalCoins').textContent = coins;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('gameOverOverlay').classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function restartGame() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>checkHighScore();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>score = 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>coins = 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>hp = 10;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>level = 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>combo = 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>warningTriggeredForLevel15 = false;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>warningTriggeredForLevel25 = false;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>warningTriggeredForLevel45 = false;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>isGameOver = false;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>isPaused = false;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('pauseOverlay').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('gameOverOverlay').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('balloonLayer').innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('pauseBtn').textContent = 'Pause';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>updateHUD();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function openShopModal() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>isPaused = true;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('modalOverlay').classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderShop();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function closeModal() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>isPaused = false;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('modalOverlay').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function renderShop() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const petsList = document.getElementById('petsList');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>petsList.innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>pets.forEach(pet =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const isEquipped = activePetIds.includes(pet.id);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const card = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>card.className = `p-3 rounded-2xl border flex flex-col justify-between items-center text-center transition-all ${isEquipped ? 'bg-purple-950 border-purple-400 shadow-lg' : 'bg-slate-800 border-slate-700'}`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>card.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="text-3xl mb-1"&gt;${pet.icon}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h5 class="font-bold text-xs text-white"&gt;${pet.name} &lt;span class="text-[9px] ${pet.isAd ? 'text-yellow-400' : 'text-purple-300'} block"&gt;${pet.title} ${pet.isAd ? '(Ad-Pet)' : ''}&lt;/span&gt;&lt;/h5&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-[10px] text-slate-400 mt-1"&gt;${pet.desc}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="mt-2 w-full"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>${pet.unlocked ?<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                            </span>`&lt;button onclick="toggleEquipPet('${pet.id}')" class="w-full py-1 text-xs arcade-font rounded-lg ${isEquipped ? 'bg-purple-600 text-white font-bold' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}"&gt;${isEquipped ? 'Active (Equipped)' : 'Equip'}&lt;/button&gt;` :</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>pet.isAd ?</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>`&lt;button onclick="startAdForPet('${pet.id}')" class="w-full py-1 text-xs arcade-font rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold"&gt;Watch Ad <span class="s1">📺</span>&lt;/button&gt;` :</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>`&lt;button onclick="buyPet('${pet.id}')" class="w-full py-1 text-xs arcade-font rounded-lg bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-bold"&gt;Buy $${pet.price}&lt;/button&gt;`</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>petsList.appendChild(card);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const skinsList = document.getElementById('skinsList');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>skinsList.innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>skins.forEach(skin =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const isSelected = currentSkinId === skin.id;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const card = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>card.className = `p-3 rounded-2xl border flex flex-col justify-between items-center text-center transition-all ${isSelected ? 'bg-indigo-950 border-indigo-400 shadow-lg' : 'bg-slate-800 border-slate-700'}`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>card.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="text-3xl mb-1"&gt;${skin.icon}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h5 class="font-bold text-xs text-white"&gt;${skin.name}&lt;/h5&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-[10px] text-slate-400 mt-0.5"&gt;${skin.desc}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="mt-2 w-full"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>${skin.unlocked ?<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                            </span>`&lt;button onclick="selectSkin('${skin.id}')" class="w-full py-1 text-xs arcade-font rounded-lg ${isSelected ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}"&gt;${isSelected ? 'Equipped' : 'Equip'}&lt;/button&gt;` :</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>`&lt;button onclick="buySkin('${skin.id}')" class="w-full py-1 text-xs arcade-font rounded-lg bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-bold"&gt;Buy $${skin.price}&lt;/button&gt;`</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>skinsList.appendChild(card);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const upgradesList = document.getElementById('upgradesList');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>upgradesList.innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>upgrades.forEach(upg =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const isMaxed = upg.maxLvl &amp;&amp; upg.level &gt;= upg.maxLvl;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const item = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>item.className = 'bg-slate-800 p-3 rounded-2xl border border-slate-700 flex justify-between items-center';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>item.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h4 class="font-bold text-white text-sm"&gt;${upg.name} (Lvl ${upg.level}${upg.maxLvl ? '/' + upg.maxLvl : ''})&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-xs text-slate-400"&gt;${upg.desc}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onclick="buyUpgrade('${upg.id}')" ${isMaxed ? 'disabled' : ''} class="${isMaxed ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer'} arcade-font text-xs px-3 py-2 rounded-xl transition-all border border-indigo-400"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>${isMaxed ? 'MAX' : '$' + upg.cost}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>upgradesList.appendChild(item);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function toggleEquipPet(id) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (activePetIds.includes(id)) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>activePetIds = activePetIds.filter(pId =&gt; pId !== id);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (activePetIds.length &gt;= 2) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>activePetIds.shift();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>activePetIds.push(id);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>playSound('coin');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>updateHUD();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderShop();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function buyPet(id) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const pet = pets.find(p =&gt; p.id === id);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (coins &gt;= pet.price) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>coins -= pet.price;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>pet.unlocked = true;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (activePetIds.length &lt; 2) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>activePetIds.push(pet.id);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('coin');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>updateHUD();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>renderShop();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function startAdForPet(id) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>pendingAdPetId = id;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('adModalOverlay').classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const timerDisplay = document.getElementById('adTimerDisplay');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const btnContainer = document.getElementById('adButtonsContainer');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>btnContainer.classList.add('hidden');</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let timeLeft = 3;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>timerDisplay.textContent = `Ad playing... ${timeLeft}s`;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const adInterval = setInterval(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>timeLeft--;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (timeLeft &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>timerDisplay.textContent = `Ad playing... ${timeLeft}s`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>clearInterval(adInterval);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>timerDisplay.textContent = `<span class="s1">🎁</span> Ad Finished!`;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>btnContainer.classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}, 1000);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function finishWatchingAd() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (pendingAdPetId) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const pet = pets.find(p =&gt; p.id === pendingAdPetId);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (pet) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>pet.unlocked = true;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (activePetIds.length &lt; 2) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>activePetIds.push(pet.id);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>activePetIds[0] = pet.id;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>pendingAdPetId = null;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>closeAdModal();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>playSound('coin');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>updateHUD();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderShop();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function closeAdModal() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('adModalOverlay').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function selectSkin(id) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>currentSkinId = id;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>playSound('coin');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderShop();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function buySkin(id) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const skin = skins.find(s =&gt; s.id === id);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (coins &gt;= skin.price) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>coins -= skin.price;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>skin.unlocked = true;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>currentSkinId = skin.id;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('coin');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>updateHUD();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>renderShop();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function buyUpgrade(id) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const upg = upgrades.find(u =&gt; u.id === id);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (upg.maxLvl &amp;&amp; upg.level &gt;= upg.maxLvl) return;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (coins &gt;= upg.cost) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>coins -= upg.cost;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>upg.level++;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>upg.cost = Math.round(upg.cost * upg.costMult);</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (id === 'damage') projectileDamage++;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (id === 'coin') coinMultiplier++;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (id === 'autopilot') autoPopperLevel++;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (id === 'skill_lightning') skillChainLightningLevel = upg.level;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (id === 'skill_vortex') skillGravityVortexLevel = upg.level;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (id === 'skill_sonic') skillSonicBoomLevel = upg.level;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (id === 'skill_chrono') skillChronoRiftLevel = upg.level;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>playSound('coin');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>updateHUD();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>renderShop();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Periodic Spawner</p>
+<p class="p1"><span class="Apple-converted-space">        </span>setInterval(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!isGameOver &amp;&amp; !isPaused) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>spawnBalloon();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}, 1100);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Auto-Popper Drone loop (uses silent pet attack to keep hand from moving)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>setInterval(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!isGameOver &amp;&amp; !isPaused &amp;&amp; autoPopperLevel &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const layer = document.getElementById('balloonLayer');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (layer) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const firstBalloon = layer.querySelector('.absolute.rounded-full');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (firstBalloon &amp;&amp; firstBalloon._popByPet) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const rect = firstBalloon.getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>firstBalloon._popByPet(rect.left + 20, rect.top + 20);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}, Math.max(400, 2400 - (autoPopperLevel * 300)));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Companion Pet Abilities Loop (uses silent pet attack to prevent hand animations)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>setInterval(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isGameOver || isPaused || activePetIds.length === 0) return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const layer = document.getElementById('balloonLayer');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!layer) return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const allBalloons = layer.querySelectorAll('.absolute.rounded-full');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>activePetIds.forEach(petId =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (petId === 'sparky' &amp;&amp; allBalloons.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const randBalloon = allBalloons[Math.floor(Math.random() * allBalloons.length)];</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (randBalloon &amp;&amp; randBalloon._popByPet) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>playSound('laser');<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const rect = randBalloon.getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>randBalloon._popByPet(rect.left + 20, rect.top + 20);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (petId === 'midas') {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const bonus = 5 * coinMultiplier;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>coins += bonus;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>playSound('coin');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>updateHUD();</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>showFloatingText(`<span class="s1">🪙</span> Midas +$${bonus}`, layer.clientWidth / 2, 80, "text-yellow-300");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (petId === 'buster' &amp;&amp; allBalloons.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>let lowest = null;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>let minHpVal = 999;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>allBalloons.forEach(b =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const hpBadge = b.querySelector('.balloon-hp');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (hpBadge) {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>let hpVal = parseInt(hpBadge.textContent) || 1;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>if (hpVal &lt; minHpVal) { minHpVal = hpVal; lowest = b; }</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (lowest &amp;&amp; lowest._popByPet) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>playSound('pop');<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const rect = lowest.getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>lowest._popByPet(rect.left + 20, rect.top + 20);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>else if (petId === 'ad_pixel' &amp;&amp; allBalloons.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const randBalloon = allBalloons[Math.floor(Math.random() * allBalloons.length)];</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (randBalloon &amp;&amp; randBalloon._popByPet) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>playSound('laser');<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const rect = randBalloon.getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>randBalloon._popByPet(rect.left + 20, rect.top + 20);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (petId === 'ad_phoenix' &amp;&amp; allBalloons.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>let sortedBalloons = Array.from(allBalloons).sort((a, b) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>let hA = parseInt(a.querySelector('.balloon-hp')?.textContent) || 1;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>let hB = parseInt(b.querySelector('.balloon-hp')?.textContent) || 1;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>return hA - hB;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (sortedBalloons[0] &amp;&amp; sortedBalloons[0]._popByPet) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>playSound('pop');<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const rect = sortedBalloons[0].getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>sortedBalloons[0]._popByPet(rect.left + 20, rect.top + 20);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (sortedBalloons[1] &amp;&amp; sortedBalloons[1]._popByPet) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>playSound('pop');<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const rect = sortedBalloons[1].getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>sortedBalloons[1]._popByPet(rect.left + 20, rect.top + 20);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (petId === 'ad_quantum') {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const bonus = 12 * coinMultiplier;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>coins += bonus;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>playSound('coin');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>updateHUD();</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>showFloatingText(`<span class="s1">🤖</span> Quantum +$${bonus}`, layer.clientWidth / 2, 100, "text-cyan-300");</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (petId === 'ad_titan' &amp;&amp; allBalloons.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const randBalloon = allBalloons[Math.floor(Math.random() * allBalloons.length)];</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (randBalloon &amp;&amp; randBalloon._popByPet) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>playSound('bomb');<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const rect = randBalloon.getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>randBalloon._popByPet(rect.left + 20, rect.top + 20);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>hp = Math.min(maxHp, hp + 0.5);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>updateHUD();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}, 2500);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>updateHUD();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
