@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balloon Pop Blaster - Chaos Edition</title>
+    <!-- Tailwind CSS for modern UI styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Fredoka for playful arcade typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .arcade-font {
+            font-family: 'Fredoka', cursive;
+        }
+        @keyframes punchShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-10px, 5px) rotate(-5deg); }
+            40% { transform: translate(10px, -5px) rotate(5deg); }
+            60% { transform: translate(-5px, -8px) rotate(-3deg); }
+            80% { transform: translate(5px, 5px) rotate(2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .shake {
+            animation: punchShake 0.3s ease-in-out;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0px) scale(0.8); opacity: 0; }
+            20% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+            100% { transform: translateY(-80px) scale(1); opacity: 0; }
+        }
+        .floating-text {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+            font-weight: 800;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
+            z-index: 50;
+        }
+        @keyframes throwProjAnim {
+            0% { transform: translate(0, 0) scale(0.5) rotate(0deg); opacity: 0; }
+            25% { opacity: 1; transform: scale(1.3) rotate(var(--rot)); }
+            100% { transform: translate(var(--dx), var(--dy)) scale(1) rotate(var(--rot)); opacity: 0; }
+        }
+        .flying-projectile {
+            position: absolute;
+            pointer-events: none;
+            animation: throwProjAnim 0.3s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+            font-size: 28px;
+            z-index: 60;
+        }
+        @keyframes handWindupThrow {
+            0% { transform: translateX(-50%) rotate(0deg) scale(1); }
+            25% { transform: translateX(-50%) translateY(12px) rotate(calc(var(--hand-rot) * -0.3)) scale(0.9); }
+            55% { transform: translateX(-50%) translateY(-22px) rotate(var(--hand-rot)) scale(1.25); }
+            100% { transform: translateX(-50%) rotate(0deg) scale(1); }
+        }
+        .hand-throwing {
+            animation: handWindupThrow 0.3s ease-out forwards;
+        }
+        @keyframes petHover {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .pet-floating {
+            animation: petHover 2s ease-in-out infinite;
+        }
+        @keyframes slideInBanner {
+            0% { transform: translateX(-100%) scale(0.9); opacity: 0; }
+            20% { transform: translateX(0) scale(1.05); opacity: 1; }
+            80% { transform: translateX(0) scale(1); opacity: 1; }
+            100% { transform: translateX(100%) scale(0.9); opacity: 0; }
+        }
+        .boss-warning-banner {
+            animation: slideInBanner 2.2s ease-in-out forwards;
+        }
+        .frozen-screen {
+            box-shadow: inset 0 0 60px rgba(147, 197, 253, 0.9);
+            border-color: #93c5fd !important;
+        }
+        .frenzy-screen {
+            box-shadow: inset 0 0 60px rgba(239, 68, 68, 0.9);
+            border-color: #ef4444 !important;
+        }
+        .chronos-screen {
+            box-shadow: inset 0 0 60px rgba(168, 85, 247, 0.9);
+            border-color: #a855f7 !important;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1b4b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4f46e5;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex flex-col items-center justify-between overflow-x-hidden">
+
+    <!-- Top Header & Stats Bar -->
+    <header class="w-full max-w-4xl bg-slate-900/85 backdrop-blur-md border-b border-slate-800 p-4 flex flex-wrap justify-between items-center shadow-lg z-10 rounded-b-2xl">
+        <div class="flex items-center gap-3">
+            <div class="bg-indigo-600 p-2.5 rounded-xl shadow-inner border border-indigo-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="arcade-font text-2xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-indigo-400">BALLOON POP BLASTER</h1>
+                <p class="text-xs text-slate-400">Pets & Bosses Chaos Edition</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 mt-2 sm:mt-0">
+            <!-- Active Pet Display Badges -->
+            <div id="activePetsContainer" class="flex gap-1.5"></div>
+
+            <!-- HP / Hearts Display with Pause & New Game buttons right next to it -->
+            <div class="bg-slate-800/90 px-3 py-2 rounded-xl border border-slate-700 text-center flex items-center gap-3">
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] text-slate-400 block arcade-font uppercase">HP (10 Max)</span>
+                    <div id="hpDisplay" class="flex gap-0.5 mt-0.5 text-red-500 font-bold text-xs">
+                        ❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️
+                    </div>
+                </div>
+                <div class="flex gap-1.5 border-l border-slate-700 pl-3">
+                    <button onclick="togglePauseGame()" id="pauseBtn" class="bg-amber-600 hover:bg-amber-500 text-white arcade-font text-xs px-2.5 py-1.5 rounded-lg transition-all cursor-pointer shadow">Pause</button>
+                    <button onclick="restartGame()" class="bg-emerald-600 hover:bg-emerald-500 text-white arcade-font text-xs px-2.5 py-1.5 rounded-lg transition-all cursor-pointer shadow">New Game</button>
+                </div>
+            </div>
+
+            <!-- Score, High Score & Level -->
+            <div class="bg-slate-800/90 px-3 py-2 rounded-xl border border-slate-700 text-center">
+                <span class="text-[10px] text-slate-400 block arcade-font uppercase">Score / Hi-Score</span>
+                <span class="arcade-font text-sm text-indigo-300">Lv.<span id="levelDisplay">1</span></span> | 
+                <span id="scoreDisplay" class="arcade-font text-base text-yellow-400">0</span> 
+                <span class="text-xs text-slate-400">(Hi: <span id="highScoreDisplay" class="text-yellow-200">0</span>)</span>
+            </div>
+
+            <!-- Coins -->
+            <div class="bg-slate-800/90 px-3 py-2 rounded-xl border border-slate-700 text-center flex items-center gap-1.5">
+                <div class="w-4 h-4 rounded-full bg-yellow-500 border border-yellow-300 flex items-center justify-center text-[10px] font-bold text-slate-950">$</div>
+                <div>
+                    <span class="text-[10px] text-slate-400 block arcade-font uppercase text-left">Coins</span>
+                    <span id="coinsDisplay" class="arcade-font text-lg text-yellow-300">0</span>
+                </div>
+            </div>
+
+            <!-- Combo Meter -->
+            <div id="comboContainer" class="hidden bg-gradient-to-r from-amber-500 to-red-500 px-3 py-1.5 rounded-xl border border-yellow-300 animate-pulse text-center">
+                <span class="text-[9px] text-white block arcade-font uppercase font-bold">Combo!</span>
+                <span id="comboDisplay" class="arcade-font text-base text-white">x1</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Arena -->
+    <main class="relative w-full max-w-4xl flex-grow flex flex-col items-center justify-center p-4">
+        
+        <!-- On-Screen Active Skill Selector Bar -->
+        <div class="w-full bg-slate-900/90 backdrop-blur-md border border-slate-800 p-2.5 rounded-2xl mb-3 flex flex-wrap items-center justify-between gap-2 shadow-lg z-20">
+            <div class="text-xs arcade-font text-indigo-400 uppercase tracking-wider px-2">⚡ Active Skill Bar:</div>
+            <div id="activeSkillBar" class="flex items-center gap-2 flex-wrap"></div>
+        </div>
+
+        <div id="gameArena" class="relative w-full h-[440px] sm:h-[500px] bg-gradient-to-b from-indigo-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-indigo-500/30 shadow-2xl overflow-hidden flex flex-col items-center justify-center select-none transition-all duration-300">
+            
+            <!-- Background floating ambient particles -->
+            <div class="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#6366f1_1px,transparent_1px)] [background-size:24px_24px]"></div>
+
+            <!-- Boss Incoming Warning Banner Overlay -->
+            <div id="bossWarningOverlay" class="absolute inset-0 bg-red-950/40 backdrop-blur-[2px] z-50 flex items-center justify-center pointer-events-none hidden">
+                <div class="boss-warning-banner bg-red-900/90 border-4 border-yellow-400 text-yellow-200 px-8 py-5 rounded-2xl shadow-[0_0_60px_rgba(239,68,68,0.9)] arcade-font text-2xl sm:text-3xl tracking-wider text-center uppercase">
+                    🔥 BIG BAD BOSS INCOMING! 💀
+                </div>
+            </div>
+
+            <!-- Active Floating Text container -->
+            <div id="floatingTextContainer" class="absolute inset-0 pointer-events-none overflow-hidden z-40"></div>
+
+            <!-- Projectile effect container -->
+            <div id="projectileContainer" class="absolute inset-0 pointer-events-none overflow-hidden z-50"></div>
+
+            <!-- Dynamic Balloon Spawn Layer -->
+            <div id="balloonLayer" class="absolute inset-0 pointer-events-none z-30 overflow-hidden"></div>
+
+            <!-- Active Power Indicator Banner -->
+            <div id="activePowerBanner" class="absolute top-4 bg-indigo-600/90 border border-indigo-400 text-white font-bold px-4 py-1.5 rounded-full shadow-lg text-xs uppercase tracking-wider transition-all opacity-0 pointer-events-none z-30">
+                Power Active!
+            </div>
+
+            <!-- Active Pets Visual Render Layer moved to Bottom-Left Corner -->
+            <div id="arenaPetsLayer" class="absolute bottom-4 left-4 flex flex-col gap-2 pointer-events-none z-40"></div>
+
+            <!-- Throwing Hand Character at Bottom Center -->
+            <div id="throwingHand" class="absolute bottom-2 left-1/2 -translate-x-1/2 text-5xl pointer-events-none z-40 drop-shadow-[0_12px_12px_rgba(0,0,0,0.7)] transition-transform origin-bottom">
+                🦾
+            </div>
+
+            <!-- Instructions Overlay -->
+            <div class="absolute bottom-2 right-4 bg-slate-900/75 backdrop-blur-sm border border-slate-700/50 px-3 py-1 rounded-full text-[11px] text-slate-300 pointer-events-none z-20 text-center">
+                🦾 Up to 2 pets active | Every 15 Lvls: Balloons gain +1 HP! 🎈
+            </div>
+
+            <!-- Pause Screen Overlay -->
+            <div id="pauseOverlay" class="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 text-center hidden">
+                <div class="bg-slate-900 border-2 border-amber-500/60 p-8 rounded-3xl shadow-2xl max-w-sm w-full space-y-4">
+                    <h2 class="arcade-font text-3xl text-amber-400">GAME PAUSED</h2>
+                    <p class="text-slate-300 text-xs">Take a breather! Click resume when ready.</p>
+                    <button onclick="togglePauseGame()" class="w-full bg-amber-600 hover:bg-amber-500 text-white arcade-font py-3 rounded-xl shadow-lg transition-all border border-amber-400 cursor-pointer text-base">
+                        Resume Game ▶️
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Over Screen Overlay -->
+            <div id="gameOverOverlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 text-center hidden">
+                <div class="bg-slate-900 border-2 border-red-500/60 p-8 rounded-3xl shadow-2xl max-w-md w-full space-y-4">
+                    <h2 class="arcade-font text-4xl text-red-500 animate-pulse">GAME OVER</h2>
+                    <p class="text-slate-300 text-sm">Your HP reached 0! Too many escaping balloons breached your defense.</p>
+                    <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 flex justify-around">
+                        <div>
+                            <span class="text-xs text-slate-400 block uppercase">Final Score</span>
+                            <span id="finalScore" class="arcade-font text-2xl text-yellow-400">0</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 block uppercase">Coins Earned</span>
+                            <span id="finalCoins" class="arcade-font text-2xl text-yellow-300">0</span>
+                        </div>
+                    </div>
+                    <button onclick="restartGame()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white arcade-font py-3 rounded-xl shadow-lg transition-all border border-indigo-400 cursor-pointer text-lg">
+                        Play Again 🚀
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Control Navigation -->
+    <nav class="w-full max-w-4xl bg-slate-900/90 backdrop-blur-md border-t border-slate-800 p-4 flex flex-wrap justify-center items-center gap-3 rounded-t-2xl z-10">
+        <button onclick="openShopModal()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white arcade-font px-5 py-2.5 rounded-xl shadow-lg transition-all border border-indigo-400 active:scale-95 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            Upgrades, Pets & Skills Shop
+        </button>
+
+        <button onclick="toggleAudio()" id="soundToggleBtn" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white arcade-font px-4 py-2.5 rounded-xl shadow-lg transition-all border border-slate-600 active:scale-95 cursor-pointer">
+            <span id="soundIcon">🔊</span> Sound: ON
+        </button>
+    </nav>
+
+    <!-- Shop Modal Dialog -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border-2 border-indigo-500/50 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            
+            <div class="bg-slate-800 p-4 border-b border-slate-700 flex justify-between items-center">
+                <h3 class="arcade-font text-xl text-yellow-400 flex items-center gap-2">🛒 Shop, Pets & Skills</h3>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center font-bold transition-all cursor-pointer">&times;</button>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-grow space-y-6">
+                <!-- Companion Pets Section -->
+                <div>
+                    <h4 class="text-xs uppercase arcade-font text-purple-400 mb-2 font-bold tracking-wider">Companion Pets System (Max 2 Active)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="petsList"></div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs uppercase arcade-font text-indigo-400 mb-2 font-bold tracking-wider">Projectile Skins</h4>
+                    <div class="grid grid-cols-2 gap-3" id="skinsList"></div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs uppercase arcade-font text-indigo-400 mb-2 font-bold tracking-wider">Combat Upgrades & Skill Levels</h4>
+                    <div id="upgradesList" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/80 p-4 border-t border-slate-700 text-right">
+                <button onclick="closeModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white arcade-font px-6 py-2 rounded-xl transition-all cursor-pointer">Resume Game</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Ad Watch Simulation Modal -->
+    <div id="adModalOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-60 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border-2 border-yellow-400 w-full max-w-sm rounded-3xl shadow-2xl p-6 text-center space-y-4">
+            <h3 class="arcade-font text-2xl text-yellow-400">📺 Watch Ad for Pet</h3>
+            <p id="adModalText" class="text-sm text-slate-300">Watch a short sponsored video to unlock this powerful Ad-Exclusive Pet!</p>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex items-center justify-center">
+                <span id="adTimerDisplay" class="arcade-font text-3xl text-indigo-400">Ad playing... 3s</span>
+            </div>
+            <div id="adButtonsContainer" class="hidden flex gap-2">
+                <button onclick="finishWatchingAd()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white arcade-font py-2.5 rounded-xl transition-all font-bold">Claim Pet! 🎉</button>
+                <button onclick="closeAdModal()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2.5 rounded-xl arcade-font">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State Variables
+        let score = 0;
+        let highScore = parseInt(localStorage.getItem('balloonHighScore')) || 0;
+        let coins = 0;
+        let hp = 10;
+        const maxHp = 10;
+        let level = 1;
+        let combo = 0;
+        let comboTimer = null;
+        let soundEnabled = true;
+        let isGameOver = false;
+        let isPaused = false; 
+
+        // Upgrades & Skills Levels
+        let projectileDamage = 1;
+        let coinMultiplier = 1;
+        let autoPopperLevel = 0;
+        
+        let skillChainLightningLevel = 0;
+        let skillGravityVortexLevel = 0;
+        let skillSonicBoomLevel = 0;
+        let skillChronoRiftLevel = 0;
+
+        let selectedActiveSkillId = 'skill_lightning'; 
+        let currentSkinId = 'needle'; 
+        let activePetIds = []; 
+        let pendingAdPetId = null;
+
+        const pets = [
+            { id: 'sparky', name: 'Sparky', title: 'Electro-Sprite', icon: '⚡', desc: 'Zaps a random balloon every 3s', unlocked: false, price: 200, isAd: false },
+            { id: 'midas', name: 'Midas', title: 'Golden Cat', icon: '🪙', desc: 'Generates +5 coins every 4s', unlocked: false, price: 250, isAd: false },
+            { id: 'buster', name: 'Buster', title: 'Popper Pup', icon: '🐾', desc: 'Snipes lowest-HP balloon every 2.5s', unlocked: false, price: 300, isAd: false },
+            { id: 'ad_pixel', name: 'Pixel Dragon', title: 'Ad-Guardian', icon: '🐉', desc: 'Stronger: Zaps balloons faster every 2s', unlocked: false, isAd: true, adViewsRequired: 1 },
+            { id: 'ad_phoenix', name: 'Solar Phoenix', title: 'Ad-Flame', icon: '🔥', desc: 'Stronger: Snipes 2 lowest-HP balloons every 2s', unlocked: false, isAd: true, adViewsRequired: 1 },
+            { id: 'ad_quantum', name: 'Quantum Bot', title: 'Ad-Tech', icon: '🤖', desc: 'Stronger: Generates +12 coins every 3s', unlocked: false, isAd: true, adViewsRequired: 1 },
+            { id: 'ad_titan', name: 'Titan Golem', title: 'Ad-Behemoth', icon: '🗿', desc: 'Stronger: Crushes random balloon & shields HP', unlocked: false, isAd: true, adViewsRequired: 1 }
+        ];
+
+        const skins = [
+            { id: 'needle', name: 'Needle Skin', icon: '📍', desc: 'Swift piercing needles', unlocked: true, price: 0 },
+            { id: 'rock', name: 'Heavy Rock Skin', icon: '🪨', desc: 'Crushing boulders with deep impacts', unlocked: false, price: 150 }
+        ];
+
+        let upgrades = [
+            { id: 'damage', name: 'Throw Power Upgrade', desc: 'Increases projectile damage dealt per hit', cost: 60, level: 1, costMult: 1.8 },
+            { id: 'coin', name: 'Coin Magnet', desc: 'Boosts coin rewards from special balloons', cost: 100, level: 1, costMult: 2.0 },
+            { id: 'autopilot', name: 'Auto-Thrower Drone', desc: 'Automatically throws projectiles periodically', cost: 300, level: 0, costMult: 2.2 },
+            { id: 'skill_lightning', name: '⚡ Chain Lightning', desc: 'Arcs lightning to zap nearby balloons automatically!', cost: 120, level: 0, costMult: 1.9, maxLvl: 5 },
+            { id: 'skill_vortex', name: '🧲 Gravity Vortex', desc: 'Pulls nearby balloons into a tight center cluster!', cost: 140, level: 0, costMult: 2.0, maxLvl: 5 },
+            { id: 'skill_sonic', name: '🌀 Sonic Boom', desc: 'Releases a shockwave stripping HP from all balloons!', cost: 160, level: 0, costMult: 2.1, maxLvl: 5 },
+            { id: 'skill_chrono', name: '⏳ Chrono-Rift', desc: 'Creates a time dilation zone slowing enemy movement!', cost: 200, level: 0, costMult: 2.2, maxLvl: 5 }
+        ];
+
+        // Web Audio Synthesizer
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'pop') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(950, now + 0.15);
+                gainNode.gain.setValueAtTime(0.3, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc.start(now);
+                osc.stop(now + 0.15);
+            } else if (type === 'stab') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(currentSkinId === 'rock' ? 120 : 250, now);
+                osc.frequency.exponentialRampToValueAtTime(currentSkinId === 'rock' ? 40 : 100, now + 0.08);
+                gainNode.gain.setValueAtTime(0.25, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            } else if (type === 'coin') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(900, now);
+                osc.frequency.setValueAtTime(1300, now + 0.08);
+                gainNode.gain.setValueAtTime(0.25, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            } else if (type === 'airleak') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.linearRampToValueAtTime(200, now + 0.2);
+                gainNode.gain.setValueAtTime(0.2, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            } else if (type === 'bomb') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(120, now);
+                osc.frequency.linearRampToValueAtTime(30, now + 0.4);
+                gainNode.gain.setValueAtTime(0.5, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'freeze') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1100, now);
+                osc.frequency.linearRampToValueAtTime(400, now + 0.3);
+                gainNode.gain.setValueAtTime(0.3, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'laser') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.linearRampToValueAtTime(150, now + 0.3);
+                gainNode.gain.setValueAtTime(0.35, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'heal') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(500, now);
+                osc.frequency.exponentialRampToValueAtTime(1000, now + 0.3);
+                gainNode.gain.setValueAtTime(0.3, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'damage') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.linearRampToValueAtTime(80, now + 0.3);
+                gainNode.gain.setValueAtTime(0.4, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('soundToggleBtn');
+            const icon = document.getElementById('soundIcon');
+            if (soundEnabled) {
+                icon.textContent = '🔊';
+                btn.innerHTML = '<span id="soundIcon">🔊</span> Sound: ON';
+            } else {
+                icon.textContent = '🔇';
+                btn.innerHTML = '<span id="soundIcon">🔇</span> Sound: OFF';
+            }
+        }
+
+        function togglePauseGame() {
+            if (isGameOver) return;
+            isPaused = !isPaused;
+            const pauseOverlay = document.getElementById('pauseOverlay');
+            const pauseBtn = document.getElementById('pauseBtn');
+            if (isPaused) {
+                pauseOverlay.classList.remove('hidden');
+                pauseBtn.textContent = 'Resume';
+            } else {
+                pauseOverlay.classList.add('hidden');
+                pauseBtn.textContent = 'Pause';
+            }
+        }
+
+        const balloonTypes = [
+            { id: 'standard', name: 'Neon Rose', color: 'bg-gradient-to-tr from-rose-500 via-pink-500 to-red-400 border-2 border-rose-200', shadow: 'shadow-[0_0_25px_rgba(244,63,94,0.9)]', score: 15, baseHp: 2, chance: 14, icon: '🎈', damageValue: 0.5, powerDesc: 'Standard balloon (0.5 HP dmg)' },
+            { id: 'airleak', name: 'Air-Leak Zipper', color: 'bg-gradient-to-tr from-lime-400 via-emerald-500 to-teal-600 border-2 border-lime-200', shadow: 'shadow-[0_0_25px_rgba(132,204,22,0.9)]', score: 45, baseHp: 1, chance: 10, icon: '💨', airLeak: true, speedMult: 1.8, damageValue: 0.5, powerDesc: 'Erratic air-leak zip! (0.5 HP dmg)' },
+            { id: 'turbo', name: 'Turbo Cyan', color: 'bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 border-2 border-cyan-200', shadow: 'shadow-[0_0_25px_rgba(6,182,212,0.9)]', score: 30, baseHp: 2, chance: 9, icon: '🚀', speedMult: 1.5, damageValue: 0.5, powerDesc: 'Fast speed balloon (0.5 HP dmg)' },
+            { id: 'gold', name: 'Solid Gold', color: 'bg-gradient-to-tr from-yellow-300 via-amber-400 to-yellow-600 border-2 border-yellow-100', shadow: 'shadow-[0_0_30px_rgba(250,204,21,1)]', score: 60, baseHp: 3, coins: 20, chance: 8, icon: '🪙', damageValue: 0.5, powerDesc: 'Gold Cache! (0.5 HP dmg)' },
+            { id: 'shield', name: 'Shielded Orb', color: 'bg-gradient-to-tr from-blue-300 via-indigo-600 to-slate-900 border-2 border-blue-200', shadow: 'shadow-[0_0_30px_rgba(96,165,250,1)]', score: 55, baseHp: 4, chance: 8, icon: '🛡️', damageValue: 0.5, powerDesc: 'Shielded armor layer (0.5 HP dmg)' },
+            { id: 'mystery', name: 'Mystery Box', color: 'bg-gradient-to-tr from-pink-400 via-purple-500 to-indigo-600 border-2 border-pink-200', shadow: 'shadow-[0_0_30px_rgba(236,72,153,1)]', score: 50, baseHp: 2, mystery: true, chance: 8, icon: '🎁', damageValue: 0.5, powerDesc: 'Random mystery reward! (0.5 HP dmg)' },
+            { id: 'freeze', name: 'Ice Crystal', color: 'bg-gradient-to-tr from-sky-200 via-blue-400 to-indigo-500 border-2 border-white', shadow: 'shadow-[0_0_30px_rgba(147,197,253,1)]', score: 40, baseHp: 3, freeze: true, chance: 7, icon: '❄️', speedMult: 0.6, damageValue: 0.5, powerDesc: 'Skill: Freezes the screen! (0.5 HP dmg)' },
+            { id: 'laser', name: 'Plasma Laser', color: 'bg-gradient-to-tr from-fuchsia-500 via-purple-600 to-violet-900 border-2 border-fuchsia-200', shadow: 'shadow-[0_0_30px_rgba(217,70,239,1)]', score: 75, baseHp: 3, laser: true, chance: 7, icon: '⚡', damageValue: 0.5, powerDesc: 'Skill: Fires laser chain! (0.5 HP dmg)' },
+            { id: 'heart', name: 'Healing Aura', color: 'bg-gradient-to-tr from-emerald-300 via-teal-500 to-green-600 border-2 border-emerald-100', shadow: 'shadow-[0_0_30px_rgba(52,211,153,1)]', score: 50, baseHp: 2, heal: true, chance: 6, icon: '💖', damageValue: 0.5, powerDesc: 'Skill: Restores +1 HP! (0.5 HP dmg)' },
+            { id: 'frenzy', name: 'Frenzy Spark', color: 'bg-gradient-to-tr from-amber-200 via-yellow-400 to-orange-500 border-2 border-yellow-100', shadow: 'shadow-[0_0_30px_rgba(252,211,77,1)]', score: 90, baseHp: 3, frenzy: true, chance: 5, icon: '🔥', damageValue: 0.5, powerDesc: 'Skill: Arena Frenzy! (0.5 HP dmg)' },
+            { id: 'bomb', name: 'Explosive Bomb', color: 'bg-gradient-to-tr from-zinc-900 via-red-950 to-black border-2 border-red-500', shadow: 'shadow-[0_0_25px_rgba(239,68,68,0.9)]', score: 40, baseHp: 1, bomb: true, chance: 6, icon: '💣', damageValue: 4.0, powerDesc: 'Bomb! Deals 4-6 health damage to all balloons' },
+            { id: 'boss', name: 'Mega Sovereign Boss', color: 'bg-gradient-to-tr from-purple-800 via-indigo-950 to-amber-600 border-4 border-yellow-300', shadow: 'shadow-[0_0_50px_rgba(234,179,8,1)]', score: 450, baseHp: 8, coins: 80, chance: 4, icon: '👑💀', speedMult: 0.55, damageValue: 1.0, powerDesc: 'Mega Boss! (1.0 HP dmg)' },
+            { id: 'boss_prism', name: 'Prism Titan', color: 'bg-gradient-to-tr from-teal-300 via-cyan-500 to-blue-700 border-4 border-cyan-200', shadow: 'shadow-[0_0_55px_rgba(6,182,212,1)]', score: 600, baseHp: 12, coins: 110, chance: 3, icon: '💎✨', speedMult: 0.5, prism: true, damageValue: 1.0, powerDesc: 'Titan Boss! (1.0 HP dmg)' },
+            { id: 'boss_inferno', name: 'Inferno Overlord', color: 'bg-gradient-to-tr from-orange-600 via-red-700 to-amber-900 border-4 border-yellow-400', shadow: 'shadow-[0_0_55px_rgba(239,68,68,1)]', score: 750, baseHp: 15, coins: 140, chance: 2, icon: '🔥👑', speedMult: 0.45, inferno: true, damageValue: 1.0, powerDesc: 'Overlord Boss! (1.0 HP dmg)' },
+            { id: 'boss_void', name: 'Void Specter', color: 'bg-gradient-to-tr from-slate-900 via-purple-950 to-black border-4 border-purple-500', shadow: 'shadow-[0_0_55px_rgba(168,85,247,1)]', score: 700, baseHp: 10, coins: 130, chance: 3, icon: '👻🌀', speedMult: 0.6, voidSpec: true, damageValue: 1.0, powerDesc: 'Specter Boss! (1.0 HP dmg)' },
+            { id: 'boss_chronos', name: 'Chronos Timekeeper', color: 'bg-gradient-to-tr from-violet-600 via-indigo-900 to-amber-500 border-4 border-amber-300', shadow: 'shadow-[0_0_60px_rgba(245,158,11,1)]', score: 900, baseHp: 18, coins: 180, chance: 2, icon: '⏳⚡', speedMult: 0.4, chronos: true, damageValue: 1.0, powerDesc: 'Timekeeper Boss! (1.0 HP dmg)' },
+            { id: 'boss_hydra', name: 'Neon Hydra', color: 'bg-gradient-to-tr from-emerald-600 via-teal-900 to-lime-500 border-4 border-lime-300', shadow: 'shadow-[0_0_65px_rgba(132,204,22,1)]', score: 1200, baseHp: 24, coins: 250, chance: 0, requiredLevel: 15, hydra: true, speedMult: 0.38, damageValue: 1.0, powerDesc: 'Super Boss Hydra! (1.0 HP dmg)' },
+            { id: 'boss_singularity', name: 'Cosmic Singularity', color: 'bg-gradient-to-tr from-indigo-900 via-fuchsia-950 to-slate-950 border-4 border-fuchsia-400', shadow: 'shadow-[0_0_75px_rgba(217,70,239,1)]', score: 2000, baseHp: 35, coins: 400, chance: 0, requiredLevel: 25, singularity: true, speedMult: 0.32, damageValue: 1.0, powerDesc: 'Super Boss Singularity! (1.0 HP dmg)' },
+            { id: 'boss_dreadnought', name: 'Astral Dreadnought', color: 'bg-gradient-to-tr from-red-900 via-zinc-900 to-amber-950 border-4 border-red-400', shadow: 'shadow-[0_0_85px_rgba(239,68,68,1)]', score: 3500, baseHp: 55, coins: 650, chance: 0, requiredLevel: 45, dreadnought: true, speedMult: 0.28, shieldArmor: true, damageValue: 1.0, powerDesc: 'Super Boss Dreadnought with Shield! (1.0 HP dmg)' }
+        ];
+
+        let warningTriggeredForLevel15 = false;
+        let warningTriggeredForLevel25 = false;
+        let warningTriggeredForLevel45 = false;
+
+        function checkLevelMilestones() {
+            level = Math.floor(score / 300) + 1;
+            document.getElementById('levelDisplay').textContent = level;
+
+            if (level >= 15 && !warningTriggeredForLevel15) {
+                warningTriggeredForLevel15 = true;
+                showBossWarningBanner("🔥 LEVEL 15: BIG BAD NEON HYDRA! 💀");
+                setTimeout(() => spawnSpecificBoss('boss_hydra'), 2200);
+            }
+            if (level >= 25 && !warningTriggeredForLevel25) {
+                warningTriggeredForLevel25 = true;
+                showBossWarningBanner("🔥 LEVEL 25: BIG BAD COSMIC SINGULARITY! 💀");
+                setTimeout(() => spawnSpecificBoss('boss_singularity'), 2200);
+            }
+            if (level >= 45 && !warningTriggeredForLevel45) {
+                warningTriggeredForLevel45 = true;
+                showBossWarningBanner("🔥 LEVEL 45: ASTRAL DREADNOUGHT SUPER BOSS! 💀");
+                setTimeout(() => spawnSpecificBoss('boss_dreadnought'), 2200);
+            }
+        }
+
+        function showBossWarningBanner(msg) {
+            const overlay = document.getElementById('bossWarningOverlay');
+            const banner = overlay.querySelector('div');
+            banner.textContent = msg;
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 2200);
+        }
+
+        function spawnSpecificBoss(bossId) {
+            if (isGameOver || isPaused) return;
+            const bossData = balloonTypes.find(b => b.id === bossId);
+            if (bossData) createBalloonElement(bossData);
+        }
+
+        function spawnBalloon() {
+            if (isGameOver || isPaused) return;
+            checkLevelMilestones();
+
+            let availablePool = balloonTypes.filter(b => {
+                if (b.requiredLevel) return level >= b.requiredLevel;
+                return true;
+            });
+
+            let rand = Math.random() * 100;
+            let cumulative = 0;
+            let selectedType = availablePool[0];
+            for (let b of availablePool) {
+                cumulative += (b.chance || 4);
+                if (rand <= cumulative) {
+                    selectedType = b;
+                    break;
+                }
+            }
+
+            createBalloonElement(selectedType);
+        }
+
+        function getBalloonBonusHP(currentLevel) {
+            return Math.floor(currentLevel / 15);
+        }
+
+        function createBalloonElement(selectedType) {
+            const layer = document.getElementById('balloonLayer');
+            const arena = document.getElementById('gameArena');
+            if (!layer || !arena) return;
+
+            const balloon = document.createElement('div');
+            const isHighBoss = selectedType.id.startsWith('boss');
+            const size = isHighBoss ? 160 : (Math.random() * 24 + 48);
+            const posX = Math.random() * (arena.clientWidth - 160) + 10;
+            
+            balloon.className = `absolute rounded-full cursor-pointer flex flex-col items-center justify-center transition-transform duration-100 select-none pointer-events-auto ${selectedType.color} ${selectedType.shadow}`;
+            balloon.style.width = `${size}px`;
+            balloon.style.height = `${size * 1.35}px`;
+            balloon.style.left = `${posX}px`;
+            balloon.style.bottom = `-180px`;
+            
+            const stringElem = document.createElement('div');
+            stringElem.className = 'absolute -bottom-4 w-0.5 h-6 bg-slate-300/80 pointer-events-none';
+            balloon.appendChild(stringElem);
+
+            let bonusHp = getBalloonBonusHP(level);
+            let currentHp = selectedType.baseHp + bonusHp;
+
+            const hpBadge = document.createElement('span');
+            hpBadge.className = 'absolute -top-3.5 bg-slate-900/95 text-yellow-300 font-extrabold text-xs px-2.5 py-0.5 rounded-full border border-yellow-400/80 balloon-hp z-10 shadow-md';
+            hpBadge.textContent = `${currentHp}HP`;
+            balloon.appendChild(hpBadge);
+
+            if (isHighBoss) {
+                const nameLabel = document.createElement('span');
+                nameLabel.className = 'bg-purple-950/90 text-yellow-300 font-extrabold text-xs px-2.5 py-1 rounded-md border-2 border-yellow-400/80 text-center max-w-[92%] shadow-lg z-10 arcade-font my-1';
+                nameLabel.textContent = selectedType.name;
+                balloon.appendChild(nameLabel);
+            }
+
+            const iconBadge = document.createElement('span');
+            iconBadge.className = `${isHighBoss ? 'text-3xl' : 'text-lg'} font-bold drop-shadow-md pointer-events-none my-0.5`;
+            iconBadge.textContent = selectedType.icon;
+            balloon.appendChild(iconBadge);
+
+            if (selectedType.shieldArmor) {
+                const shieldBadge = document.createElement('span');
+                shieldBadge.className = 'text-[10px] bg-red-900/95 text-yellow-300 font-bold px-2 py-0.5 rounded border border-yellow-400 mt-0.5 uppercase tracking-wider';
+                shieldBadge.textContent = '🛡️ Shielded';
+                balloon.appendChild(shieldBadge);
+            }
+
+            let voidInterval = null;
+            if (selectedType.voidSpec) {
+                voidInterval = setInterval(() => {
+                    if (!balloon.parentNode || isGameOver || isPaused) {
+                        clearInterval(voidInterval);
+                        return;
+                    }
+                    balloon.style.opacity = '0.2';
+                    setTimeout(() => {
+                        if (isPaused) return;
+                        const newX = Math.random() * (arena.clientWidth - 160) + 10;
+                        balloon.style.left = `${newX}px`;
+                        balloon.style.opacity = '1';
+                    }, 400);
+                }, 3500);
+            }
+
+            let leakInterval = null;
+            if (selectedType.airLeak) {
+                playSound('airleak');
+                leakInterval = setInterval(() => {
+                    if (!balloon.parentNode || isGameOver || isPaused) {
+                        clearInterval(leakInterval);
+                        return;
+                    }
+                    const jitter = (Math.random() - 0.5) * 120;
+                    const currentLeft = parseFloat(balloon.style.left || '100');
+                    const newLeft = Math.max(10, Math.min(arena.clientWidth - 160, currentLeft + jitter));
+                    balloon.style.left = `${newLeft}px`;
+                }, 300);
+            }
+
+            const handlePopAction = (e, isPetOrAuto = false) => {
+                if (e && e.stopPropagation) e.stopPropagation();
+                if (e && e.preventDefault) e.preventDefault();
+                if (isGameOver || isPaused) return;
+
+                const clientX = e && e.clientX ? e.clientX : (balloon.getBoundingClientRect().left + 40);
+                const clientY = e && e.clientY ? e.clientY : (balloon.getBoundingClientRect().top + 40);
+
+                if (!isPetOrAuto) {
+                    triggerThrowingHandAndProjectile(clientX, clientY);
+                } else {
+                    triggerSilentProjectile(clientX, clientY);
+                }
+
+                currentHp -= projectileDamage;
+                
+                if (currentHp > 0) {
+                    playSound('stab');
+                    const hpElem = balloon.querySelector('.balloon-hp');
+                    if (hpElem) hpElem.textContent = `${currentHp}HP`;
+                    balloon.style.transform = 'scale(0.88) rotate(-5deg)';
+                    setTimeout(() => balloon.style.transform = 'scale(1) rotate(0deg)', 90);
+                    showFloatingText(`-${projectileDamage} HP`, clientX, clientY, "text-yellow-300");
+                    return;
+                }
+
+                if (voidInterval) clearInterval(voidInterval);
+                if (leakInterval) clearInterval(leakInterval);
+                popBalloon(balloon, selectedType, clientX, clientY);
+            };
+
+            balloon.addEventListener('click', (e) => handlePopAction(e, false));
+            // _popByPet ensures pets and drones never trigger the player throwing-hand animation
+            balloon._popByPet = (clientX, clientY) => handlePopAction({ clientX, clientY }, true);
+
+            layer.appendChild(balloon);
+
+            let speedMultiplier = (selectedType.speedMult || 1.0) * 0.88;
+            if (skillChronoRiftLevel > 0) {
+                speedMultiplier *= (1 - (skillChronoRiftLevel * 0.12));
+            }
+
+            const duration = (Math.random() * 4 + 8) / Math.max(0.2, speedMultiplier); 
+            
+            const animation = balloon.animate([
+                { transform: `translateY(0px)` },
+                { transform: `translateY(-${arena.clientHeight + 180}px)` }
+            ], {
+                duration: duration * 1000,
+                easing: 'linear'
+            });
+
+            const checkPauseInterval = setInterval(() => {
+                if (isGameOver || !balloon.parentNode) {
+                    clearInterval(checkPauseInterval);
+                    return;
+                }
+                if (isPaused) {
+                    animation.pause();
+                } else {
+                    animation.play();
+                }
+            }, 100);
+
+            animation.onfinish = () => {
+                clearInterval(checkPauseInterval);
+                if (voidInterval) clearInterval(voidInterval);
+                if (leakInterval) clearInterval(leakInterval);
+                if (balloon.parentNode && !isGameOver && !isPaused) {
+                    balloon.remove();
+                    damagePlayerHP(selectedType.damageValue || 0.5);
+                }
+            };
+        }
+
+        function useActiveSkill(skillId) {
+            if (isGameOver || isPaused) return;
+            const arena = document.getElementById('gameArena');
+            const layer = document.getElementById('balloonLayer');
+            if (!arena || !layer) return;
+
+            const centerX = arena.clientWidth / 2;
+            const centerY = arena.clientHeight / 2;
+
+            if (skillId === 'skill_lightning' && skillChainLightningLevel > 0) {
+                playSound('laser');
+                showFloatingText(`⚡ Chain Lightning Activated!`, centerX, centerY, "text-cyan-300");
+                const allBalloons = layer.querySelectorAll('.absolute.rounded-full');
+                let count = 0;
+                allBalloons.forEach(b => {
+                    if (count < (skillChainLightningLevel + 2)) {
+                        count++;
+                        setTimeout(() => { 
+                            if (b.parentNode && !isPaused) {
+                                const rect = b.getBoundingClientRect();
+                                if (b._popByPet) b._popByPet(rect.left + 20, rect.top + 20);
+                                else b.click();
+                            } 
+                        }, count * 80);
+                    }
+                });
+            } else if (skillId === 'skill_vortex' && skillGravityVortexLevel > 0) {
+                playSound('freeze');
+                showFloatingText(`🧲 Gravity Vortex Pull!`, centerX, centerY, "text-purple-400");
+                const allBalloons = layer.querySelectorAll('.absolute.rounded-full');
+                allBalloons.forEach(b => {
+                    b.style.left = `${centerX + (Math.random() - 0.5) * 80}px`;
+                });
+            } else if (skillId === 'skill_sonic' && skillSonicBoomLevel > 0) {
+                playSound('bomb');
+                showFloatingText(`🌀 Sonic Boom Shockwave!`, centerX, centerY, "text-amber-300");
+                const allBalloons = layer.querySelectorAll('.absolute.rounded-full');
+                allBalloons.forEach(b => {
+                    const hpBadge = b.querySelector('.balloon-hp');
+                    if (hpBadge) {
+                        let hpText = parseInt(hpBadge.textContent) || 1;
+                        hpText = Math.max(1, hpText - skillSonicBoomLevel);
+                        hpBadge.textContent = `${hpText}HP`;
+                    }
+                });
+            } else if (skillId === 'skill_chrono' && skillChronoRiftLevel > 0) {
+                playSound('freeze');
+                showFloatingText(`⏳ Chrono-Rift Time Dilation!`, centerX, centerY, "text-amber-400");
+                arena.classList.add('chronos-screen');
+                setTimeout(() => arena.classList.remove('chronos-screen'), 3000);
+            } else {
+                showFloatingText(`🔒 Upgrade skill in shop first!`, centerX, centerY, "text-red-400");
+            }
+        }
+
+        function triggerThrowingHandAndProjectile(targetX, targetY) {
+            const arena = document.getElementById('gameArena');
+            const hand = document.getElementById('throwingHand');
+            const container = document.getElementById('projectileContainer');
+            if (!arena || !hand || !container) return;
+
+            const arenaRect = arena.getBoundingClientRect();
+            const startX = arenaRect.width / 2;
+            const startY = arenaRect.height - 35;
+
+            const endX = targetX - arenaRect.left;
+            const endY = targetY - arenaRect.top;
+
+            const dx = endX - startX;
+            const dy = endY - startY;
+            const angleRad = Math.atan2(dy, dx);
+            const angleDeg = (angleRad * 180) / Math.PI + 90;
+
+            hand.style.setProperty('--hand-rot', `${angleDeg * 0.45}deg`);
+            hand.classList.remove('hand-throwing');
+            void hand.offsetWidth;
+            hand.classList.add('hand-throwing');
+
+            const proj = document.createElement('div');
+            proj.className = 'flying-projectile';
+            proj.style.left = `${startX - 14}px`;
+            proj.style.top = `${startY - 35}px`;
+            proj.style.setProperty('--dx', `${dx}px`);
+            proj.style.setProperty('--dy', `${dy}px`);
+            proj.style.setProperty('--rot', `${angleDeg + 45}deg`);
+            
+            const activeSkin = skins.find(s => s.id === currentSkinId);
+            proj.textContent = activeSkin ? activeSkin.icon : '📍';
+
+            container.appendChild(proj);
+            setTimeout(() => proj.remove(), 300);
+        }
+
+        function triggerSilentProjectile(targetX, targetY) {
+            const arena = document.getElementById('gameArena');
+            const container = document.getElementById('projectileContainer');
+            if (!arena || !container) return;
+
+            const arenaRect = arena.getBoundingClientRect();
+            const startX = arenaRect.width / 2;
+            const startY = arenaRect.height - 35;
+
+            const endX = targetX - arenaRect.left;
+            const endY = targetY - arenaRect.top;
+
+            const dx = endX - startX;
+            const dy = endY - startY;
+            const angleRad = Math.atan2(dy, dx);
+            const angleDeg = (angleRad * 180) / Math.PI + 90;
+
+            const proj = document.createElement('div');
+            proj.className = 'flying-projectile';
+            proj.style.left = `${startX - 14}px`;
+            proj.style.top = `${startY - 35}px`;
+            proj.style.setProperty('--dx', `${dx}px`);
+            proj.style.setProperty('--dy', `${dy}px`);
+            proj.style.setProperty('--rot', `${angleDeg + 45}deg`);
+            
+            const activeSkin = skins.find(s => s.id === currentSkinId);
+            proj.textContent = activeSkin ? activeSkin.icon : '📍';
+
+            container.appendChild(proj);
+            setTimeout(() => proj.remove(), 300);
+        }
+
+        function damagePlayerHP(amount) {
+            if (isGameOver || isPaused) return;
+            hp = Math.max(0, hp - amount);
+            playSound('damage');
+            updateHUD();
+
+            const arena = document.getElementById('gameArena');
+            arena.classList.add('shake');
+            setTimeout(() => arena.classList.remove('shake'), 300);
+            showFloatingText(`-${amount} ❤️`, arena.clientWidth / 2, 60, "text-red-500");
+
+            if (hp <= 0) {
+                triggerGameOver();
+            }
+        }
+
+        function popBalloon(balloonElem, typeData, clientX, clientY) {
+            if (isGameOver || isPaused) return;
+
+            showPowerBanner(typeData.name, typeData.powerDesc);
+
+            if (typeData.bomb) {
+                playSound('bomb');
+                combo += 2;
+                score += typeData.score;
+                
+                const bombDmg = Math.floor(Math.random() * 3) + 4;
+                showFloatingText(`💣 BOMB! -${bombDmg} HP to all!`, clientX, clientY, "text-red-400");
+                
+                const arena = document.getElementById('gameArena');
+                arena.classList.add('frenzy-screen');
+                setTimeout(() => arena.classList.remove('frenzy-screen'), 1200);
+
+                const layer = document.getElementById('balloonLayer');
+                if (layer) {
+                    const allBalloons = layer.querySelectorAll('.absolute.rounded-full');
+                    allBalloons.forEach(b => {
+                        const hpBadge = b.querySelector('.balloon-hp');
+                        if (hpBadge) {
+                            let bHp = parseInt(hpBadge.textContent) || 1;
+                            bHp -= bombDmg;
+                            if (bHp <= 0) {
+                                b.style.transform = 'scale(1.4)';
+                                b.style.opacity = '0';
+                                setTimeout(() => b.remove(), 150);
+                            } else {
+                                hpBadge.textContent = `${bHp}HP`;
+                            }
+                        }
+                    });
+                }
+            } else if (typeData.mystery) {
+                playSound('coin');
+                combo++;
+                const bonusCoins = 15 * coinMultiplier;
+                coins += bonusCoins;
+                score += typeData.score;
+                showFloatingText(`🎁 MYSTERY! +$${bonusCoins}`, clientX, clientY, "text-pink-300");
+            } else if (typeData.freeze) {
+                playSound('freeze');
+                combo++;
+                score += typeData.score;
+                coins += 5 * coinMultiplier;
+                showFloatingText(`❄️ FREEZE! +${typeData.score}`, clientX, clientY, "text-blue-300");
+                
+                const arena = document.getElementById('gameArena');
+                arena.classList.add('frozen-screen');
+                setTimeout(() => arena.classList.remove('frozen-screen'), 2000);
+            } else if (typeData.laser) {
+                playSound('laser');
+                combo += 2;
+                score += typeData.score;
+                coins += 10 * coinMultiplier;
+                
+                const laserDmg = Math.floor(Math.random() * 3) + 2;
+                showFloatingText(`⚡ LASER BLAST! -${laserDmg} HP to all!`, clientX, clientY, "text-fuchsia-300");
+
+                const layer = document.getElementById('balloonLayer');
+                if (layer) {
+                    const allBalloons = layer.querySelectorAll('.absolute.rounded-full');
+                    allBalloons.forEach(b => {
+                        const hpBadge = b.querySelector('.balloon-hp');
+                        if (hpBadge) {
+                            let bHp = parseInt(hpBadge.textContent) || 1;
+                            bHp -= laserDmg;
+                            if (bHp <= 0) {
+                                b.style.transform = 'scale(1.4)';
+                                b.style.opacity = '0';
+                                setTimeout(() => b.remove(), 150);
+                            } else {
+                                hpBadge.textContent = `${bHp}HP`;
+                            }
+                        }
+                    });
+                }
+            } else if (typeData.heal) {
+                playSound('heal');
+                combo++;
+                hp = Math.min(maxHp, hp + 1);
+                score += typeData.score;
+                showFloatingText(`💖 HEALED! +1 HP`, clientX, clientY, "text-emerald-300");
+            } else if (typeData.frenzy) {
+                playSound('laser');
+                combo += 3;
+                score += typeData.score;
+                coins += 15 * coinMultiplier;
+                showFloatingText(`🔥 CHAIN FRENZY! +${typeData.score}`, clientX, clientY, "text-amber-300");
+                
+                const arena = document.getElementById('gameArena');
+                arena.classList.add('frenzy-screen');
+                setTimeout(() => arena.classList.remove('frenzy-screen'), 1500);
+
+                const layer = document.getElementById('balloonLayer');
+                if (layer) {
+                    const allBalloons = layer.querySelectorAll('.absolute.rounded-full');
+                    let poppedCount = 0;
+                    allBalloons.forEach(b => {
+                        if (b !== balloonElem && poppedCount < 4) {
+                            poppedCount++;
+                            b.style.transform = 'scale(1.4)';
+                            b.style.opacity = '0';
+                            setTimeout(() => b.remove(), 150);
+                        }
+                    });
+                }
+            } else {
+                playSound('pop');
+                combo++;
+                clearTimeout(comboTimer);
+                comboTimer = setTimeout(() => {
+                    if (!isPaused) combo = 0;
+                    updateHUD();
+                }, 2500);
+
+                let earnedScore = typeData.score + Math.floor(combo / 3) * 5;
+                let earnedCoins = (typeData.coins || 2) * coinMultiplier;
+
+                score += earnedScore;
+                coins += Math.round(earnedCoins);
+
+                showFloatingText(`+${earnedScore}`, clientX, clientY, "text-yellow-400");
+                if (typeData.coins) {
+                    playSound('coin');
+                }
+            }
+
+            checkHighScore();
+            updateHUD();
+
+            balloonElem.style.transform = 'scale(1.4)';
+            balloonElem.style.opacity = '0';
+            setTimeout(() => {
+                if (balloonElem.parentNode) {
+                    balloonElem.remove();
+                }
+            }, 150);
+        }
+
+        function checkHighScore() {
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('balloonHighScore', highScore);
+            }
+        }
+
+        function showPowerBanner(title, desc) {
+            const banner = document.getElementById('activePowerBanner');
+            if (!banner) return;
+            banner.textContent = `${title}: ${desc}`;
+            banner.style.opacity = '1';
+            setTimeout(() => {
+                banner.style.opacity = '0';
+            }, 1800);
+        }
+
+        function showFloatingText(text, x, y, colorClass) {
+            const container = document.getElementById('floatingTextContainer');
+            if (!container) return;
+            const elem = document.createElement('div');
+            elem.className = `floating-text arcade-font text-xl ${colorClass}`;
+            
+            const rect = container.getBoundingClientRect();
+            elem.style.left = `${Math.max(10, Math.min(rect.width - 100, x - rect.left - 20))}px`;
+            elem.style.top = `${Math.max(10, Math.min(rect.height - 40, y - rect.top - 20))}px`;
+            elem.textContent = text;
+
+            container.appendChild(elem);
+            setTimeout(() => elem.remove(), 800);
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('highScoreDisplay').textContent = highScore;
+            document.getElementById('coinsDisplay').textContent = coins;
+            document.getElementById('levelDisplay').textContent = level;
+
+            const hpContainer = document.getElementById('hpDisplay');
+            let heartsStr = '';
+            for (let i = 0; i < maxHp; i++) {
+                if (i < Math.floor(hp)) {
+                    heartsStr += '❤️';
+                } else if (i < hp) {
+                    heartsStr += '🧡';
+                } else {
+                    heartsStr += '🖤';
+                }
+            }
+            hpContainer.textContent = heartsStr;
+
+            const comboContainer = document.getElementById('comboContainer');
+            const comboDisplay = document.getElementById('comboDisplay');
+            if (combo > 1) {
+                comboContainer.classList.remove('hidden');
+                comboDisplay.textContent = `x${combo}`;
+            } else {
+                comboContainer.classList.add('hidden');
+            }
+
+            const activePetsContainer = document.getElementById('activePetsContainer');
+            activePetsContainer.innerHTML = '';
+            
+            const arenaPetsLayer = document.getElementById('arenaPetsLayer');
+            arenaPetsLayer.innerHTML = '';
+
+            if (activePetIds.length > 0) {
+                activePetIds.forEach(petId => {
+                    const petData = pets.find(p => p.id === petId);
+                    if (petData) {
+                        const badge = document.createElement('div');
+                        badge.className = 'bg-purple-900/85 border border-purple-400 px-2 py-1 rounded-lg flex items-center gap-1';
+                        badge.innerHTML = `
+                            <span class="text-xs">${petData.icon}</span>
+                            <span class="arcade-font text-[9px] text-white">${petData.name}</span>
+                        `;
+                        activePetsContainer.appendChild(badge);
+
+                        // Rendered neatly in the bottom-left corner of the arena
+                        const arenaPetElem = document.createElement('div');
+                        arenaPetElem.className = 'pet-floating bg-purple-950/90 border border-purple-400/80 px-2.5 py-1 rounded-xl shadow-[0_0_10px_rgba(168,85,247,0.5)] flex items-center gap-1.5 backdrop-blur-sm';
+                        arenaPetElem.innerHTML = `
+                            <span class="text-lg">${petData.icon}</span>
+                            <span class="arcade-font text-[10px] text-yellow-300">${petData.name}</span>
+                        `;
+                        arenaPetsLayer.appendChild(arenaPetElem);
+                    }
+                });
+            }
+
+            renderActiveSkillBar();
+        }
+
+        function renderActiveSkillBar() {
+            const bar = document.getElementById('activeSkillBar');
+            if (!bar) return;
+            bar.innerHTML = '';
+
+            const skillDefs = [
+                { id: 'skill_lightning', name: 'Lightning', icon: '⚡', level: skillChainLightningLevel },
+                { id: 'skill_vortex', name: 'Vortex', icon: '🧲', level: skillGravityVortexLevel },
+                { id: 'skill_sonic', name: 'Sonic Boom', icon: '🌀', level: skillSonicBoomLevel },
+                { id: 'skill_chrono', name: 'Chrono-Rift', icon: '⏳', level: skillChronoRiftLevel }
+            ];
+
+            skillDefs.forEach(s => {
+                const isSelected = selectedActiveSkillId === s.id;
+                const isUnlocked = s.level > 0;
+                const btn = document.createElement('button');
+                btn.onclick = () => {
+                    selectedActiveSkillId = s.id;
+                    renderActiveSkillBar();
+                    useActiveSkill(s.id);
+                };
+                btn.className = `px-3 py-1.5 rounded-xl border text-xs arcade-font flex items-center gap-1.5 transition-all cursor-pointer ${
+                    isSelected ? 'bg-indigo-600 border-indigo-300 text-white shadow-md scale-105' : 
+                    isUnlocked ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-750' : 'bg-slate-900 border-slate-800 text-slate-500 opacity-60'
+                }`;
+                btn.innerHTML = `<span>${s.icon}</span> <span>${s.name} ${isUnlocked ? '(Lv.' + s.level + ')' : '(Locked)'}</span>`;
+                bar.appendChild(btn);
+            });
+        }
+
+        function triggerGameOver() {
+            isGameOver = true;
+            checkHighScore();
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalCoins').textContent = coins;
+            document.getElementById('gameOverOverlay').classList.remove('hidden');
+        }
+
+        function restartGame() {
+            checkHighScore();
+            score = 0;
+            coins = 0;
+            hp = 10;
+            level = 1;
+            combo = 0;
+            warningTriggeredForLevel15 = false;
+            warningTriggeredForLevel25 = false;
+            warningTriggeredForLevel45 = false;
+            isGameOver = false;
+            isPaused = false;
+            document.getElementById('pauseOverlay').classList.add('hidden');
+            document.getElementById('gameOverOverlay').classList.add('hidden');
+            document.getElementById('balloonLayer').innerHTML = '';
+            document.getElementById('pauseBtn').textContent = 'Pause';
+            updateHUD();
+        }
+
+        function openShopModal() {
+            isPaused = true;
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            renderShop();
+        }
+
+        function closeModal() {
+            isPaused = false;
+            document.getElementById('modalOverlay').classList.add('hidden');
+        }
+
+        function renderShop() {
+            const petsList = document.getElementById('petsList');
+            petsList.innerHTML = '';
+            pets.forEach(pet => {
+                const isEquipped = activePetIds.includes(pet.id);
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-2xl border flex flex-col justify-between items-center text-center transition-all ${isEquipped ? 'bg-purple-950 border-purple-400 shadow-lg' : 'bg-slate-800 border-slate-700'}`;
+                card.innerHTML = `
+                    <div class="text-3xl mb-1">${pet.icon}</div>
+                    <div>
+                        <h5 class="font-bold text-xs text-white">${pet.name} <span class="text-[9px] ${pet.isAd ? 'text-yellow-400' : 'text-purple-300'} block">${pet.title} ${pet.isAd ? '(Ad-Pet)' : ''}</span></h5>
+                        <p class="text-[10px] text-slate-400 mt-1">${pet.desc}</p>
+                    </div>
+                    <div class="mt-2 w-full">
+                        ${pet.unlocked ? 
+                            `<button onclick="toggleEquipPet('${pet.id}')" class="w-full py-1 text-xs arcade-font rounded-lg ${isEquipped ? 'bg-purple-600 text-white font-bold' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}">${isEquipped ? 'Active (Equipped)' : 'Equip'}</button>` :
+                            pet.isAd ?
+                            `<button onclick="startAdForPet('${pet.id}')" class="w-full py-1 text-xs arcade-font rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold">Watch Ad 📺</button>` :
+                            `<button onclick="buyPet('${pet.id}')" class="w-full py-1 text-xs arcade-font rounded-lg bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-bold">Buy $${pet.price}</button>`
+                        }
+                    </div>
+                `;
+                petsList.appendChild(card);
+            });
+
+            const skinsList = document.getElementById('skinsList');
+            skinsList.innerHTML = '';
+            skins.forEach(skin => {
+                const isSelected = currentSkinId === skin.id;
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-2xl border flex flex-col justify-between items-center text-center transition-all ${isSelected ? 'bg-indigo-950 border-indigo-400 shadow-lg' : 'bg-slate-800 border-slate-700'}`;
+                card.innerHTML = `
+                    <div class="text-3xl mb-1">${skin.icon}</div>
+                    <div>
+                        <h5 class="font-bold text-xs text-white">${skin.name}</h5>
+                        <p class="text-[10px] text-slate-400 mt-0.5">${skin.desc}</p>
+                    </div>
+                    <div class="mt-2 w-full">
+                        ${skin.unlocked ? 
+                            `<button onclick="selectSkin('${skin.id}')" class="w-full py-1 text-xs arcade-font rounded-lg ${isSelected ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}">${isSelected ? 'Equipped' : 'Equip'}</button>` :
+                            `<button onclick="buySkin('${skin.id}')" class="w-full py-1 text-xs arcade-font rounded-lg bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-bold">Buy $${skin.price}</button>`
+                        }
+                    </div>
+                `;
+                skinsList.appendChild(card);
+            });
+
+            const upgradesList = document.getElementById('upgradesList');
+            upgradesList.innerHTML = '';
+            upgrades.forEach(upg => {
+                const isMaxed = upg.maxLvl && upg.level >= upg.maxLvl;
+                const item = document.createElement('div');
+                item.className = 'bg-slate-800 p-3 rounded-2xl border border-slate-700 flex justify-between items-center';
+                item.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-white text-sm">${upg.name} (Lvl ${upg.level}${upg.maxLvl ? '/' + upg.maxLvl : ''})</h4>
+                        <p class="text-xs text-slate-400">${upg.desc}</p>
+                    </div>
+                    <button onclick="buyUpgrade('${upg.id}')" ${isMaxed ? 'disabled' : ''} class="${isMaxed ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer'} arcade-font text-xs px-3 py-2 rounded-xl transition-all border border-indigo-400">
+                        ${isMaxed ? 'MAX' : '$' + upg.cost}
+                    </button>
+                `;
+                upgradesList.appendChild(item);
+            });
+        }
+
+        function toggleEquipPet(id) {
+            if (activePetIds.includes(id)) {
+                activePetIds = activePetIds.filter(pId => pId !== id);
+            } else {
+                if (activePetIds.length >= 2) {
+                    activePetIds.shift();
+                }
+                activePetIds.push(id);
+            }
+            playSound('coin');
+            updateHUD();
+            renderShop();
+        }
+
+        function buyPet(id) {
+            const pet = pets.find(p => p.id === id);
+            if (coins >= pet.price) {
+                coins -= pet.price;
+                pet.unlocked = true;
+                if (activePetIds.length < 2) {
+                    activePetIds.push(pet.id);
+                }
+                playSound('coin');
+                updateHUD();
+                renderShop();
+            }
+        }
+
+        function startAdForPet(id) {
+            pendingAdPetId = id;
+            document.getElementById('adModalOverlay').classList.remove('hidden');
+            const timerDisplay = document.getElementById('adTimerDisplay');
+            const btnContainer = document.getElementById('adButtonsContainer');
+            btnContainer.classList.add('hidden');
+            
+            let timeLeft = 3;
+            timerDisplay.textContent = `Ad playing... ${timeLeft}s`;
+            
+            const adInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    timerDisplay.textContent = `Ad playing... ${timeLeft}s`;
+                } else {
+                    clearInterval(adInterval);
+                    timerDisplay.textContent = `🎁 Ad Finished!`;
+                    btnContainer.classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        function finishWatchingAd() {
+            if (pendingAdPetId) {
+                const pet = pets.find(p => p.id === pendingAdPetId);
+                if (pet) {
+                    pet.unlocked = true;
+                    if (activePetIds.length < 2) {
+                        activePetIds.push(pet.id);
+                    } else {
+                        activePetIds[0] = pet.id;
+                    }
+                }
+                pendingAdPetId = null;
+            }
+            closeAdModal();
+            playSound('coin');
+            updateHUD();
+            renderShop();
+        }
+
+        function closeAdModal() {
+            document.getElementById('adModalOverlay').classList.add('hidden');
+        }
+
+        function selectSkin(id) {
+            currentSkinId = id;
+            playSound('coin');
+            renderShop();
+        }
+
+        function buySkin(id) {
+            const skin = skins.find(s => s.id === id);
+            if (coins >= skin.price) {
+                coins -= skin.price;
+                skin.unlocked = true;
+                currentSkinId = skin.id;
+                playSound('coin');
+                updateHUD();
+                renderShop();
+            }
+        }
+
+        function buyUpgrade(id) {
+            const upg = upgrades.find(u => u.id === id);
+            if (upg.maxLvl && upg.level >= upg.maxLvl) return;
+
+            if (coins >= upg.cost) {
+                coins -= upg.cost;
+                upg.level++;
+                upg.cost = Math.round(upg.cost * upg.costMult);
+                
+                if (id === 'damage') projectileDamage++;
+                if (id === 'coin') coinMultiplier++;
+                if (id === 'autopilot') autoPopperLevel++;
+                if (id === 'skill_lightning') skillChainLightningLevel = upg.level;
+                if (id === 'skill_vortex') skillGravityVortexLevel = upg.level;
+                if (id === 'skill_sonic') skillSonicBoomLevel = upg.level;
+                if (id === 'skill_chrono') skillChronoRiftLevel = upg.level;
+
+                playSound('coin');
+                updateHUD();
+                renderShop();
+            }
+        }
+
+        // Periodic Spawner
+        setInterval(() => {
+            if (!isGameOver && !isPaused) {
+                spawnBalloon();
+            }
+        }, 1100);
+
+        // Auto-Popper Drone loop (uses silent pet attack to keep hand from moving)
+        setInterval(() => {
+            if (!isGameOver && !isPaused && autoPopperLevel > 0) {
+                const layer = document.getElementById('balloonLayer');
+                if (layer) {
+                    const firstBalloon = layer.querySelector('.absolute.rounded-full');
+                    if (firstBalloon && firstBalloon._popByPet) {
+                        const rect = firstBalloon.getBoundingClientRect();
+                        firstBalloon._popByPet(rect.left + 20, rect.top + 20);
+                    }
+                }
+            }
+        }, Math.max(400, 2400 - (autoPopperLevel * 300)));
+
+        // Companion Pet Abilities Loop (uses silent pet attack to prevent hand animations)
+        setInterval(() => {
+            if (isGameOver || isPaused || activePetIds.length === 0) return;
+            const layer = document.getElementById('balloonLayer');
+            if (!layer) return;
+            const allBalloons = layer.querySelectorAll('.absolute.rounded-full');
+
+            activePetIds.forEach(petId => {
+                if (petId === 'sparky' && allBalloons.length > 0) {
+                    const randBalloon = allBalloons[Math.floor(Math.random() * allBalloons.length)];
+                    if (randBalloon && randBalloon._popByPet) { 
+                        playSound('laser'); 
+                        const rect = randBalloon.getBoundingClientRect();
+                        randBalloon._popByPet(rect.left + 20, rect.top + 20);
+                    }
+                } else if (petId === 'midas') {
+                    const bonus = 5 * coinMultiplier;
+                    coins += bonus;
+                    playSound('coin');
+                    updateHUD();
+                    showFloatingText(`🪙 Midas +$${bonus}`, layer.clientWidth / 2, 80, "text-yellow-300");
+                } else if (petId === 'buster' && allBalloons.length > 0) {
+                    let lowest = null;
+                    let minHpVal = 999;
+                    allBalloons.forEach(b => {
+                        const hpBadge = b.querySelector('.balloon-hp');
+                        if (hpBadge) {
+                            let hpVal = parseInt(hpBadge.textContent) || 1;
+                            if (hpVal < minHpVal) { minHpVal = hpVal; lowest = b; }
+                        }
+                    });
+                    if (lowest && lowest._popByPet) { 
+                        playSound('pop'); 
+                        const rect = lowest.getBoundingClientRect();
+                        lowest._popByPet(rect.left + 20, rect.top + 20);
+                    }
+                } 
+                else if (petId === 'ad_pixel' && allBalloons.length > 0) {
+                    const randBalloon = allBalloons[Math.floor(Math.random() * allBalloons.length)];
+                    if (randBalloon && randBalloon._popByPet) { 
+                        playSound('laser'); 
+                        const rect = randBalloon.getBoundingClientRect();
+                        randBalloon._popByPet(rect.left + 20, rect.top + 20);
+                    }
+                } else if (petId === 'ad_phoenix' && allBalloons.length > 0) {
+                    let sortedBalloons = Array.from(allBalloons).sort((a, b) => {
+                        let hA = parseInt(a.querySelector('.balloon-hp')?.textContent) || 1;
+                        let hB = parseInt(b.querySelector('.balloon-hp')?.textContent) || 1;
+                        return hA - hB;
+                    });
+                    if (sortedBalloons[0] && sortedBalloons[0]._popByPet) { 
+                        playSound('pop'); 
+                        const rect = sortedBalloons[0].getBoundingClientRect();
+                        sortedBalloons[0]._popByPet(rect.left + 20, rect.top + 20);
+                    }
+                    if (sortedBalloons[1] && sortedBalloons[1]._popByPet) { 
+                        playSound('pop'); 
+                        const rect = sortedBalloons[1].getBoundingClientRect();
+                        sortedBalloons[1]._popByPet(rect.left + 20, rect.top + 20);
+                    }
+                } else if (petId === 'ad_quantum') {
+                    const bonus = 12 * coinMultiplier;
+                    coins += bonus;
+                    playSound('coin');
+                    updateHUD();
+                    showFloatingText(`🤖 Quantum +$${bonus}`, layer.clientWidth / 2, 100, "text-cyan-300");
+                } else if (petId === 'ad_titan' && allBalloons.length > 0) {
+                    const randBalloon = allBalloons[Math.floor(Math.random() * allBalloons.length)];
+                    if (randBalloon && randBalloon._popByPet) { 
+                        playSound('bomb'); 
+                        const rect = randBalloon.getBoundingClientRect();
+                        randBalloon._popByPet(rect.left + 20, rect.top + 20);
+                    }
+                    hp = Math.min(maxHp, hp + 0.5);
+                    updateHUD();
+                }
+            });
+        }, 2500);
+
+        updateHUD();
+    </script>
+</body>
+</html>
