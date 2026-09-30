@@ -1734,8 +1734,7 @@
             container.appendChild(elem);
             setTimeout(() => elem.remove(), 800);
         }
-
-        function updateHUD() {
+function updateHUD() {
             document.getElementById('scoreDisplay').textContent = score;
             document.getElementById('highScoreDisplay').textContent = highScore;
             document.getElementById('coinsDisplay').textContent = coins;
@@ -1763,15 +1762,17 @@
             const comboContainer = document.getElementById('comboContainer');
             const comboDisplay = document.getElementById('comboDisplay');
             if (combo > 1) {
-                comboContainer.classList.remove('hidden');
+                comboContainer.classList.remove('stay');
                 comboDisplay.textContent = `x${combo}`;
             } else {
-                comboContainer.classList.add('hidden');
+                comboContainer.classList.add('stay');
             }
 
+            // Left empty to remove active pets from the header next to the title
             const activePetsContainer = document.getElementById('activePetsContainer');
             activePetsContainer.innerHTML = '';
             
+            // Pets remain inside the game arena here:
             const arenaPetsLayer = document.getElementById('arenaPetsLayer');
             arenaPetsLayer.innerHTML = '';
 
@@ -1779,14 +1780,6 @@
                 activePetIds.forEach(petId => {
                     const petData = pets.find(p => p.id === petId);
                     if (petData) {
-                        const badge = document.createElement('div');
-                        badge.className = 'bg-purple-900/85 border border-purple-400 px-1.5 py-0.5 rounded-lg flex items-center gap-1';
-                        badge.innerHTML = `
-                            <span class="text-[10px]">${petData.icon}</span>
-                            <span class="arcade-font text-[8px] text-white">${petData.name}</span>
-                        `;
-                        activePetsContainer.appendChild(badge);
-
                         const arenaPetElem = document.createElement('div');
                         arenaPetElem.className = 'pet-floating bg-purple-950/90 border border-purple-400/80 px-2 py-0.5 rounded-xl shadow-[0_0_10px_rgba(168,85,247,0.5)] flex items-center gap-1 backdrop-blur-sm';
                         arenaPetElem.innerHTML = `
