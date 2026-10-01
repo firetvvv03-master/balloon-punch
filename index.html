@@ -90,7 +90,7 @@
         @keyframes fallSnowflake {
             0% { transform: translateY(-10px) translateX(0px); opacity: 0; }
             20% { opacity: 0.9; }
-            100% { transform: translateY(450px) translateX(30px); opacity: 0; }
+            100% { transform: translateY(500px) translateX(30px); opacity: 0; }
         }
         .snowflake-particle {
             position: absolute;
@@ -111,7 +111,7 @@
         @keyframes fallRaindrop {
             0% { transform: translateY(-20px); opacity: 0; }
             20% { opacity: 0.8; }
-            100% { transform: translateY(460px); opacity: 0; }
+            100% { transform: translateY(500px); opacity: 0; }
         }
         .raindrop-particle {
             position: absolute;
@@ -262,87 +262,82 @@
 </head>
 <body>
 
-    <header class="w-full max-w-4xl bg-slate-900/90 backdrop-blur-md border-b border-slate-800 p-3 flex flex-wrap justify-between items-center shadow-lg z-10 rounded-b-2xl">
+    <header class="w-full max-w-4xl bg-slate-900/90 backdrop-blur-md border-b border-slate-800 p-2.5 flex flex-wrap justify-between items-center shadow-lg z-10 rounded-b-2xl">
         <div class="flex items-center gap-2">
-            <div class="bg-indigo-600 p-2 rounded-xl shadow-inner border border-indigo-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="bg-indigo-600 p-1.5 rounded-xl shadow-inner border border-indigo-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
             </div>
             <div>
-                <h1 class="arcade-font text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-indigo-400">BALLOON POP BLASTER</h1>
-                <p class="text-[10px] text-slate-400">Weather Chaos Edition[cite: 1] • Codex & Freeze Updates</p>
+                <div class="flex items-center gap-2">
+                    <h1 class="arcade-font text-base sm:text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-indigo-400">BALLOON POP BLASTER</h1>
+                    <!-- Menu Dropdown next to title -->
+                    <div class="relative">
+                        <button onclick="toggleMenuDropdown()" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/50 arcade-font px-2.5 py-1 rounded-xl text-xs flex items-center gap-1 shadow cursor-pointer">
+                            <span>☰ Menu</span>
+                        </button>
+                        <div id="menuDropdownContent" class="absolute left-0 mt-1 w-48 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 hidden flex flex-col p-1.5 space-y-1">
+                            <button onclick="openCodexModal(); toggleMenuDropdown();" class="text-left px-3 py-1.5 text-xs hover:bg-slate-800 rounded-lg text-cyan-300 arcade-font flex items-center gap-2 cursor-pointer">📖 Codex & Guide</button>
+                            <button onclick="openAchievementsModal(); toggleMenuDropdown();" class="text-left px-3 py-1.5 text-xs hover:bg-slate-800 rounded-lg text-amber-300 arcade-font flex items-center gap-2 cursor-pointer">🏆 Quests & Ach.</button>
+                            <button onclick="toggleAudio();" class="text-left px-3 py-1.5 text-xs hover:bg-slate-800 rounded-lg text-slate-200 arcade-font flex items-center gap-2 cursor-pointer"><span id="soundIcon">🔊</span> Sound Toggle</button>
+                            <button onclick="toggleHaptics();" class="text-left px-3 py-1.5 text-xs hover:bg-slate-800 rounded-lg text-slate-200 arcade-font flex items-center gap-2 cursor-pointer"><span id="hapticIcon">📳</span> Haptics Toggle</button>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-[9px] text-slate-400">Weather Chaos Edition[cite: 1]</p>
             </div>
         </div>
 
         <div class="flex items-center gap-2 mt-1 sm:mt-0">
-            <div id="activePetsContainer" class="flex gap-1"></div>
-
-            <div class="bg-slate-800/90 px-2.5 py-1.5 rounded-xl border border-slate-700 text-center flex items-center gap-2">
+            <div class="bg-slate-800/90 px-2 py-1 rounded-xl border border-slate-700 text-center flex items-center gap-2">
                 <div class="flex flex-col items-center">
-                    <span class="text-[9px] text-slate-400 block arcade-font uppercase">HP (10 Max)</span>
-                    <div id="hpDisplay" class="flex gap-0.5 mt-0.5 text-red-500 font-bold text-[10px]">
+                    <span class="text-[8px] text-slate-400 block arcade-font uppercase">HP (10 Max)</span>
+                    <div id="hpDisplay" class="flex gap-0.5 mt-0.5 text-red-500 font-bold text-[9px]">
                         ❤️❤️❤️❤❤️❤️❤️❤❤️❤️
                     </div>
                 </div>
                 <div class="flex gap-1 border-l border-slate-700 pl-2">
-                    <button onclick="togglePauseGame()" id="pauseBtn" class="bg-amber-600 hover:bg-amber-500 text-white arcade-font text-[11px] px-2 py-1 rounded-lg transition-all cursor-pointer shadow">Pause</button>
-                    <button onclick="restartGame()" class="bg-emerald-600 hover:bg-emerald-500 text-white arcade-font text-[11px] px-2 py-1 rounded-lg transition-all cursor-pointer shadow">New</button>
+                    <button onclick="togglePauseGame()" id="pauseBtn" class="bg-amber-600 hover:bg-amber-500 text-white arcade-font text-[10px] px-2 py-1 rounded-lg transition-all cursor-pointer shadow">Pause</button>
+                    <button onclick="restartGame()" class="bg-emerald-600 hover:bg-emerald-500 text-white arcade-font text-[10px] px-2 py-1 rounded-lg transition-all cursor-pointer shadow">New</button>
                 </div>
             </div>
 
-            <div class="bg-slate-800/90 px-2.5 py-1.5 rounded-xl border border-slate-700 text-center">
-                <span class="text-[9px] text-slate-400 block arcade-font uppercase">Score / Hi</span>
-                <span class="arcade-font text-xs text-indigo-300">Lv.<span id="levelDisplay">1</span></span> | 
-                <span id="scoreDisplay" class="arcade-font text-sm text-yellow-400">0</span> 
-                <span class="text-[10px] text-slate-400">(<span id="highScoreDisplay" class="text-yellow-200">0</span>)</span>
+            <div class="bg-slate-800/90 px-2 py-1 rounded-xl border border-slate-700 text-center">
+                <span class="text-[8px] text-slate-400 block arcade-font uppercase">Score / Hi</span>
+                <span class="arcade-font text-[11px] text-indigo-300">Lv.<span id="levelDisplay">1</span></span> | 
+                <span id="scoreDisplay" class="arcade-font text-xs text-yellow-400">0</span> 
+                <span class="text-[9px] text-slate-400">(<span id="highScoreDisplay" class="text-yellow-200">0</span>)</span>
             </div>
 
-            <div class="bg-slate-800/90 px-2.5 py-1.5 rounded-xl border border-slate-700 text-center flex items-center gap-1">
-                <div class="w-3.5 h-3.5 rounded-full bg-yellow-500 border border-yellow-300 flex items-center justify-center text-[9px] font-bold text-slate-950">$</div>
+            <div class="bg-slate-800/90 px-2 py-1 rounded-xl border border-slate-700 text-center flex items-center gap-1">
+                <div class="w-3.5 h-3.5 rounded-full bg-yellow-500 border border-yellow-300 flex items-center justify-center text-[8px] font-bold text-slate-950">$</div>
                 <div>
-                    <span class="text-[9px] text-slate-400 block arcade-font uppercase text-left">Coins</span>
-                    <span id="coinsDisplay" class="arcade-font text-base text-yellow-300">0</span>
+                    <span class="text-[8px] text-slate-400 block arcade-font uppercase text-left">Coins</span>
+                    <span id="coinsDisplay" class="arcade-font text-sm text-yellow-300">0</span>
                 </div>
-            </div>
-
-            <div id="comboContainer" class="hidden bg-gradient-to-r from-amber-500 to-red-500 px-2.5 py-1 rounded-xl border border-yellow-300 animate-pulse text-center">
-                <span class="text-[8px] text-white block arcade-font uppercase font-bold">Combo!</span>
-                <span id="comboDisplay" class="arcade-font text-sm text-white">x1</span>
             </div>
         </div>
     </header>
 
-    <main class="relative w-full max-w-4xl flex-grow flex flex-col items-center justify-center p-3 overflow-hidden">
+    <main class="relative w-full max-w-4xl flex-grow flex flex-col items-center justify-center p-2 overflow-hidden">
         
+        <!-- Skill Bar & Shop/Upgrade Button together -->
         <div class="w-full bg-slate-900/90 backdrop-blur-md border border-slate-800 p-2 rounded-2xl mb-2 flex flex-wrap items-center justify-between gap-2 shadow-lg z-20">
-            <div class="flex items-center gap-2">
-                <button onclick="openShopModal()" class="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white arcade-font px-3 py-1.5 rounded-xl shadow-lg transition-all border border-indigo-400 active:scale-95 cursor-pointer text-xs">
+            <div class="flex items-center gap-2 flex-wrap flex-grow">
+                <span class="text-[10px] arcade-font text-indigo-400 uppercase tracking-wider">⚡ Skills:</span>
+                <div id="activeSkillBar" class="flex items-center gap-1.5 flex-wrap"></div>
+            </div>
+            <button onclick="openAchievementsModal(); toggleMenuDropdown();" class="text-left px-3 py-1.5 text-xs hover:bg-slate-800 rounded-lg text-amber-300 arcade-font flex items-center gap-2 cursor-pointer">🏆 Quests & Ach.</button>
+            <div>
+                <button onclick="openShopModal()" class="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white arcade-font px-3 py-1 rounded-xl shadow-lg transition-all border border-indigo-400 active:scale-95 cursor-pointer text-xs">
                     🛒 Shop & Upgrades
                 </button>
-                <button onclick="openCodexModal()" class="flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-500 text-white arcade-font px-3 py-1.5 rounded-xl shadow-lg transition-all border border-cyan-400 active:scale-95 cursor-pointer text-xs">
-                    📖 Codex & Game Guide
-                </button>
-                <button onclick="openAchievementsModal()" class="flex items-center gap-1.5 bg-amber-600 hover:bg-amber-500 text-white arcade-font px-3 py-1.5 rounded-xl shadow-lg transition-all border border-amber-400 active:scale-95 cursor-pointer text-xs">
-                    🏆 Quests & Achievements
-                </button>
-            </div>
-            <div class="flex items-center gap-1">
-                <button onclick="toggleAudio()" id="soundToggleBtn" class="bg-slate-800 hover:bg-slate-700 text-white arcade-font px-2 py-1.5 rounded-xl shadow transition-all border border-slate-600 cursor-pointer text-xs">
-                    <span id="soundIcon">🔊</span> Sound
-                </button>
-                <button onclick="toggleHaptics()" id="hapticToggleBtn" class="bg-slate-800 hover:bg-slate-700 text-white arcade-font px-2 py-1.5 rounded-xl shadow transition-all border border-slate-600 cursor-pointer text-xs">
-                    <span id="hapticIcon">📳</span> Haptics
-                </button>
             </div>
         </div>
 
-        <div class="w-full bg-slate-900/90 backdrop-blur-md border border-slate-800 p-2 rounded-2xl mb-2 flex flex-wrap items-center justify-between gap-2 shadow-lg z-20">
-            <div class="text-[11px] arcade-font text-indigo-400 uppercase tracking-wider px-1">⚡ Skills:</div>
-            <div id="activeSkillBar" class="flex items-center gap-1.5 flex-wrap"></div>
-        </div>
-
-        <div id="gameArena" class="relative w-full h-[360px] sm:h-[440px] bg-gradient-to-b from-indigo-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-indigo-500/30 shadow-2xl overflow-hidden flex flex-col items-center justify-center select-none transition-all duration-700">
+        <!-- Expanded Arena Height -->
+        <div id="gameArena" class="relative w-full h-[450px] sm:h-[550px] bg-gradient-to-b from-indigo-950 via-slate-900 to-slate-950 rounded-3xl border-2 border-indigo-500/30 shadow-2xl overflow-hidden flex flex-col items-center justify-center select-none transition-all duration-700">
             
             <div class="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#6366f1_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
@@ -372,6 +367,7 @@
 
             <div id="arenaPetsLayer" class="absolute bottom-3 left-3 flex flex-col gap-1.5 pointer-events-none z-40"></div>
 
+            <!-- Throwing Hand with dynamic aura/glow matching skin -->
             <div id="throwingHand" class="absolute bottom-2 left-1/2 -translate-x-1/2 text-5xl pointer-events-none z-40 drop-shadow-[0_12px_12px_rgba(0,0,0,0.8)] transition-transform origin-bottom">
                 🦾
             </div>
@@ -429,7 +425,7 @@
             <div class="p-4 overflow-y-auto flex-grow space-y-4 text-xs text-slate-300">
                 <div>
                     <h4 class="text-sm font-bold arcade-font text-indigo-400 uppercase mb-1">🎮 How to Play</h4>
-                    <p class="leading-relaxed">Tap or click any active balloon on screen to throw your piercing needle/projectile at it. Each balloon has an HP pool. Pop them before they float off the top of the screen to avoid taking HP damage. Build up combo chains for higher scores, collect coins, and buy upgrades or pets to conquer endless waves!</p>
+                    <p class="leading-relaxed">Tap or click any active balloon on screen to throw your piercing needle/projectile at it. Each balloon has an HP pool. Pop them before they float off the top of the screen to avoid taking HP damage. Collect coins, and buy upgrades or pets to conquer endless waves!</p>
                 </div>
                 <hr class="border-slate-800">
                 <div>
@@ -552,8 +548,6 @@
         let hp = 10;
         const maxHp = 10;
         let level = 1;
-        let combo = 0;
-        let comboTimer = null;
         let soundEnabled = true;
         let hapticsEnabled = true;
         let isGameOver = false;
@@ -580,6 +574,22 @@
 
         let pendingAdAction = null; 
         let activeMiniGameEvent = null;
+
+        function toggleMenuDropdown() {
+            const dropdown = document.getElementById('menuDropdownContent');
+            if (dropdown) {
+                dropdown.classList.toggle('hidden');
+            }
+        }
+
+        window.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('menuDropdownContent');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                if (!e.target.closest('button')) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+        });
 
         let currentWeather = { id: 'clear', name: 'Clear Skies', icon: '🌤' };
         const weatherTypes = [
@@ -622,7 +632,6 @@
                         setTimeout(() => arena.classList.remove('frozen-screen'), 3000);
                     }
                     
-                    // Freeze all active balloons currently on screen for 3 seconds with glowing snow style
                     const balloonLayer = document.getElementById('balloonLayer');
                     if (balloonLayer) {
                         const activeBalloons = balloonLayer.querySelectorAll('.absolute.rounded-full');
@@ -711,10 +720,10 @@
         ];
 
         const handSkins = [
-            { id: 'hand_standard', name: 'Standard Mech Arm', icon: '🦾', desc: 'Standard robotic arm', unlocked: true, price: 0 },
-            { id: 'hand_gold', name: 'Golden Cyber-Arm', icon: '🦾✨', desc: 'Gilded high-speed precision arm', unlocked: false, price: 400 },
-            { id: 'hand_magma', name: 'Magma Power-Fist', icon: '🦾🔥', desc: 'Volcanic thermal blaster arm', unlocked: false, price: 800 },
-            { id: 'hand_quantum', name: 'Quantum Mecha-Glove', icon: '🦾⚡', desc: 'Futuristic hyper-velocity glove', unlocked: false, price: 1200 }
+            { id: 'hand_standard', name: 'Standard Mech Arm', icon: '🦾', glow: 'drop-shadow-[0_12px_12px_rgba(0,0,0,0.8)]', desc: 'Standard robotic arm', unlocked: true, price: 0 },
+            { id: 'hand_gold', name: 'Golden Cyber-Arm', icon: '🦾✨', glow: 'drop-shadow-[0_0_15px_rgba(250,204,21,0.9)] filter brightness-125', desc: 'Gilded high-speed precision arm', unlocked: false, price: 400 },
+            { id: 'hand_magma', name: 'Magma Power-Fist', icon: '🦾🔥', glow: 'drop-shadow-[0_0_20px_rgba(239,68,68,1)] filter hue-rotate-[320deg] saturate-200', desc: 'Volcanic thermal red blaster arm', unlocked: false, price: 800 },
+            { id: 'hand_quantum', name: 'Quantum Mecha-Glove', icon: '🦾⚡', glow: 'drop-shadow-[0_0_20px_rgba(56,189,248,1)] filter hue-rotate-[180deg] saturate-150', desc: 'Futuristic hyper-velocity cyan glove', unlocked: false, price: 1200 }
         ];
 
         const objectSkins = [
@@ -727,7 +736,6 @@
         let quests = [
             { id: 'q1', title: 'Hardcore Popper I', desc: 'Pop 100 balloons in a single run', target: 100, progress: 0, rewardCoins: 500, completed: false, claimed: false },
             { id: 'q2', title: 'Boss Executioner I', desc: 'Defeat 5 Boss balloons in total', target: 5, progress: 0, rewardCoins: 800, completed: false, claimed: false },
-            { id: 'q3', title: 'Combo Master I', desc: 'Reach a Combo streak of x20', target: 20, progress: 0, rewardCoins: 1000, completed: false, claimed: false },
             { id: 'q4', title: 'Coin Collector I', desc: 'Collect 50 total coins in a run', target: 50, progress: 0, rewardCoins: 700, completed: false, claimed: false },
             { id: 'q5', title: 'Level Climber I', desc: 'Reach Level 10 in a single run', target: 10, progress: 0, rewardCoins: 1200, completed: false, claimed: false }
         ];
@@ -750,7 +758,6 @@
             quests = [
                 { id: 'q1', title: 'Hardcore Popper II', desc: 'Pop 250 balloons in a single run', target: 250, progress: 0, rewardCoins: 1200, completed: false, claimed: false },
                 { id: 'q2', title: 'Boss Executioner II', desc: 'Defeat 12 Boss balloons in total', target: 12, progress: 0, rewardCoins: 1800, completed: false, claimed: false },
-                { id: 'q3', title: 'Combo Master II', desc: 'Reach a Combo streak of x40', target: 40, progress: 0, rewardCoins: 2200, completed: false, claimed: false },
                 { id: 'q4', title: 'Coin Collector II', desc: 'Collect 150 total coins in a run', target: 150, progress: 0, rewardCoins: 1500, completed: false, claimed: false },
                 { id: 'q5', title: 'Level Climber II', desc: 'Reach Level 25 in a single run', target: 25, progress: 0, rewardCoins: 3000, completed: false, claimed: false }
             ];
@@ -795,15 +802,12 @@
 
         function toggleHaptics() {
             hapticsEnabled = !hapticsEnabled;
-            const btn = document.getElementById('hapticToggleBtn');
             const icon = document.getElementById('hapticIcon');
             if (hapticsEnabled) {
                 icon.textContent = '📳';
-                btn.innerHTML = '<span id="hapticIcon">📳</span> Haptics: ON';
                 triggerHaptic('medium');
             } else {
                 icon.textContent = '📴';
-                btn.innerHTML = '<span id="hapticIcon">📴</span> Haptics: OFF';
             }
         }
 
@@ -904,14 +908,11 @@
 
         function toggleAudio() {
             soundEnabled = !soundEnabled;
-            const btn = document.getElementById('soundToggleBtn');
             const icon = document.getElementById('soundIcon');
             if (soundEnabled) {
                 icon.textContent = '🔊';
-                btn.innerHTML = '<span id="soundIcon">🔊</span> Sound';
             } else {
                 icon.textContent = '🔇';
-                btn.innerHTML = '<span id="soundIcon">🔇</span> Sound';
             }
         }
 
@@ -936,7 +937,7 @@
             { id: 'gold', name: 'Solid Gold', color: 'bg-gradient-to-tr from-yellow-300 via-amber-400 to-yellow-600 border-2 border-yellow-100', shadow: 'shadow-[0_0_30px_rgba(250,204,21,1)]', score: 60, baseHp: 3, coins: 20, chance: 8, icon: '🪙', damageValue: 0.5, powerDesc: 'Gold Cache! (0.5 HP dmg)' },
             { id: 'shield', name: 'Shielded Orb', color: 'bg-gradient-to-tr from-blue-300 via-indigo-600 to-slate-900 border-2 border-blue-200', shadow: 'shadow-[0_0_30px_rgba(96,165,250,1)]', score: 55, baseHp: 4, chance: 8, icon: '🛡', damageValue: 0.5, powerDesc: 'Shielded armor layer (0.5 HP dmg)' },
             { id: 'mystery', name: 'Mystery Box', color: 'bg-gradient-to-tr from-pink-400 via-purple-500 to-indigo-600 border-2 border-pink-200', shadow: 'shadow-[0_0_30px_rgba(236,72,153,1)]', score: 50, baseHp: 2, mystery: true, chance: 8, icon: '🎁', damageValue: 0.5, powerDesc: 'Random mystery reward! (0.5 HP dmg)' },
-            { id: 'freeze', name: 'Ice Crystal', color: 'bg-gradient-to-tr from-sky-200 via-blue-400 to-indigo-500 border-2 border-white', shadow: 'shadow-[0_0_30px_rgba(147,197,253,1)]', score: 40, baseHp: 3, freeze: true, chance: 7, icon: '❄️', speedMult: 0.6, damageValue: 0.5, powerDesc: 'Skill: Freezes the screen! (0.5 HP dmg)' },
+            { id: 'freeze', name: 'Ice Crystal', color: 'bg-gradient-to-tr from-sky-200 via-blue-400 to-indigo-500 border-2 border-white', shadow: 'shadow-[0_0_30px_rgba(147,197,253,1)]', score: 40, baseHp: 3, freeze: true, chance: 7, icon: '❄', speedMult: 0.6, damageValue: 0.5, powerDesc: 'Skill: Freezes the screen! (0.5 HP dmg)' },
             { id: 'laser', name: 'Plasma Laser', color: 'bg-gradient-to-tr from-fuchsia-500 via-purple-600 to-violet-900 border-2 border-fuchsia-200', shadow: 'shadow-[0_0_30px_rgba(217,70,239,1)]', score: 75, baseHp: 3, laser: true, chance: 7, icon: '⚡', damageValue: 0.5, powerDesc: 'Skill: Fires laser chain! (0.5 HP dmg)' },
             { id: 'heart', name: 'Healing Aura', color: 'bg-gradient-to-tr from-emerald-300 via-teal-500 to-green-600 border-2 border-emerald-100', shadow: 'shadow-[0_0_30px_rgba(52,211,153,1)]', score: 50, baseHp: 2, heal: true, chance: 6, icon: '💖', damageValue: 0.5, powerDesc: 'Skill: Restores +1 HP! (0.5 HP dmg)' },
             { id: 'frenzy', name: 'Frenzy Spark', color: 'bg-gradient-to-tr from-amber-200 via-yellow-400 to-orange-500 border-2 border-yellow-100', shadow: 'shadow-[0_0_30px_rgba(252,211,77,1)]', score: 90, baseHp: 3, frenzy: true, chance: 5, icon: '🔥', damageValue: 0.5, powerDesc: 'Skill: Arena Frenzy! (0.5 HP dmg)' },
@@ -1400,6 +1401,7 @@
 
             const activeHandSkin = handSkins.find(h => h.id === currentHandSkinId);
             hand.textContent = activeHandSkin ? activeHandSkin.icon : '🦾';
+            hand.className = `absolute bottom-2 left-1/2 -translate-x-1/2 text-5xl pointer-events-none z-40 ${activeHandSkin ? activeHandSkin.glow : 'drop-shadow-[0_12px_12px_rgba(0,0,0,0.8)]'} transition-transform origin-bottom`;
 
             const arenaRect = arena.getBoundingClientRect();
             const startX = arenaRect.width / 2;
@@ -1504,7 +1506,6 @@
 
             if (typeData.bomb) {
                 playSound('bomb');
-                combo += 2;
                 score += typeData.score;
                 
                 const bombDmg = Math.floor(Math.random() * 3) + 4;
@@ -1534,14 +1535,12 @@
                 }
             } else if (typeData.mystery) {
                 playSound('coin');
-                combo++;
                 const bonusCoins = 15 * coinMultiplier;
                 coins += bonusCoins;
                 score += typeData.score;
                 showFloatingText(`🎁 MYSTERY! +$${bonusCoins}`, clientX, clientY, "text-pink-300");
             } else if (typeData.freeze) {
                 playSound('freeze');
-                combo++;
                 score += typeData.score;
                 coins += 5 * coinMultiplier;
                 showFloatingText(`❄ FREEZE! +${typeData.score}`, clientX, clientY, "text-blue-300");
@@ -1551,7 +1550,6 @@
                 setTimeout(() => arena.classList.remove('frozen-screen'), 2000);
             } else if (typeData.laser) {
                 playSound('laser');
-                combo += 2;
                 score += typeData.score;
                 coins += 10 * coinMultiplier;
                 
@@ -1578,13 +1576,11 @@
                 }
             } else if (typeData.heal) {
                 playSound('heal');
-                combo++;
                 hp = Math.min(maxHp, hp + 1);
                 score += typeData.score;
                 showFloatingText(`💖 HEALED! +1 HP`, clientX, clientY, "text-emerald-300");
             } else if (typeData.frenzy) {
                 playSound('laser');
-                combo += 3;
                 score += typeData.score;
                 coins += 15 * coinMultiplier;
                 showFloatingText(`🔥 CHAIN FRENZY! +${typeData.score}`, clientX, clientY, "text-amber-300");
@@ -1608,14 +1604,8 @@
                 }
             } else {
                 playSound('pop');
-                combo++;
-                clearTimeout(comboTimer);
-                comboTimer = setTimeout(() => {
-                    if (!isPaused) combo = 0;
-                    updateHUD();
-                }, 2500);
 
-                let earnedScore = typeData.score + Math.floor(combo / 3) * 5;
+                let earnedScore = typeData.score;
                 let earnedCoins = (typeData.coins || 2) * coinMultiplier;
 
                 score += earnedScore;
@@ -1623,10 +1613,6 @@
                 maxCoinsEarnedTracker += Math.round(earnedCoins);
 
                 quests.forEach(q => {
-                    if (q.id === 'q3' && !q.completed) {
-                        q.progress = Math.max(q.progress, combo);
-                        if (q.progress >= q.target) q.completed = true;
-                    }
                     if (q.id === 'q4' && !q.completed) {
                         q.progress = Math.min(q.target, q.progress + Math.round(earnedCoins));
                         if (q.progress >= q.target) q.completed = true;
@@ -1734,7 +1720,8 @@
             container.appendChild(elem);
             setTimeout(() => elem.remove(), 800);
         }
-function updateHUD() {
+
+        function updateHUD() {
             document.getElementById('scoreDisplay').textContent = score;
             document.getElementById('highScoreDisplay').textContent = highScore;
             document.getElementById('coinsDisplay').textContent = coins;
@@ -1744,6 +1731,7 @@ function updateHUD() {
             const activeHandSkin = handSkins.find(h => h.id === currentHandSkinId);
             if (handElem) {
                 handElem.textContent = activeHandSkin ? activeHandSkin.icon : '🦾';
+                handElem.className = `absolute bottom-2 left-1/2 -translate-x-1/2 text-5xl pointer-events-none z-40 ${activeHandSkin ? activeHandSkin.glow : 'drop-shadow-[0_12px_12px_rgba(0,0,0,0.8)]'} transition-transform origin-bottom`;
             }
 
             const hpContainer = document.getElementById('hpDisplay');
@@ -1759,20 +1747,6 @@ function updateHUD() {
             }
             hpContainer.textContent = heartsStr;
 
-            const comboContainer = document.getElementById('comboContainer');
-            const comboDisplay = document.getElementById('comboDisplay');
-            if (combo > 1) {
-                comboContainer.classList.remove('stay');
-                comboDisplay.textContent = `x${combo}`;
-            } else {
-                comboContainer.classList.add('stay');
-            }
-
-            // Left empty to remove active pets from the header next to the title
-            const activePetsContainer = document.getElementById('activePetsContainer');
-            activePetsContainer.innerHTML = '';
-            
-            // Pets remain inside the game arena here:
             const arenaPetsLayer = document.getElementById('arenaPetsLayer');
             arenaPetsLayer.innerHTML = '';
 
@@ -1816,7 +1790,7 @@ function updateHUD() {
                     renderActiveSkillBar();
                     useActiveSkill(s.id);
                 };
-                btn.className = `px-2.5 py-1 rounded-xl border text-[11px] arcade-font flex items-center gap-1 transition-all cursor-pointer ${
+                btn.className = `px-2 py-1 rounded-xl border text-[10px] arcade-font flex items-center gap-1 transition-all cursor-pointer ${
                     isSelected ? 'bg-indigo-600 border-indigo-300 text-white shadow-md scale-105' : 
                     isUnlocked ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-750' : 'bg-slate-900 border-slate-800 text-slate-500 opacity-60'
                 }`;
@@ -1839,7 +1813,6 @@ function updateHUD() {
             coins = 0;
             hp = 10;
             level = 1;
-            combo = 0;
             projectileDamage = 1;
             coinMultiplier = 1;
             autoPopperLevel = 0;
@@ -1953,7 +1926,7 @@ function updateHUD() {
             const arena = document.getElementById('gameArena');
             const th = themes.find(t => t.id === themeId);
             if (!arena || !th) return;
-            arena.className = `relative w-full h-[360px] sm:h-[440px] rounded-3xl border-2 shadow-2xl overflow-hidden flex flex-col items-center justify-center select-none transition-all duration-700 ${th.gradient} ${th.border}`;
+            arena.className = `relative w-full h-[450px] sm:h-[550px] rounded-3xl border-2 shadow-2xl overflow-hidden flex flex-col items-center justify-center select-none transition-all duration-700 ${th.gradient} ${th.border}`;
         }
 
         function selectTheme(themeId) {
@@ -1968,7 +1941,7 @@ function updateHUD() {
 
         function buyTheme(themeId) {
             const th = themes.find(t => t.id === themeId);
-            if (th && coins >= th.price) {
+            if (th && coins >= th.price && !th.unlocked) {
                 coins -= th.price;
                 th.unlocked = true;
                 applyTheme(themeId);
@@ -1979,181 +1952,166 @@ function updateHUD() {
             }
         }
 
+        function selectHandSkin(skinId) {
+            const sk = handSkins.find(h => h.id === skinId);
+            if (sk && sk.unlocked) {
+                currentHandSkinId = skinId;
+                playSound('coin');
+                saveGameState();
+                renderShop();
+                updateHUD();
+            }
+        }
+
+        function buyHandSkin(skinId) {
+            const sk = handSkins.find(h => h.id === skinId);
+            if (sk && coins >= sk.price && !sk.unlocked) {
+                coins -= sk.price;
+                sk.unlocked = true;
+                currentHandSkinId = skinId;
+                playSound('coin');
+                updateHUD();
+                saveGameState();
+                renderShop();
+            }
+        }
+
+        function selectObjectSkin(skinId) {
+            const sk = objectSkins.find(s => s.id === skinId);
+            if (sk && sk.unlocked) {
+                currentObjectSkinId = skinId;
+                playSound('coin');
+                saveGameState();
+                renderShop();
+            }
+        }
+
+        function buyObjectSkin(skinId) {
+            const sk = objectSkins.find(s => s.id === skinId);
+            if (sk && coins >= sk.price && !sk.unlocked) {
+                coins -= sk.price;
+                sk.unlocked = true;
+                currentObjectSkinId = skinId;
+                playSound('coin');
+                updateHUD();
+                saveGameState();
+                renderShop();
+            }
+        }
+
         function renderShop() {
-            const themesList = document.getElementById('themesList');
-            themesList.innerHTML = '';
+            const tContainer = document.getElementById('themesList');
+            tContainer.innerHTML = '';
             themes.forEach(th => {
                 const isSelected = currentThemeId === th.id;
-                const card = document.createElement('div');
-                card.className = `p-2.5 rounded-2xl border flex flex-col justify-between items-center text-center transition-all ${
-                    isSelected ? 'bg-indigo-950/80 border-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.5)]' : 'bg-slate-800/80 border-slate-700'
-                }`;
-                card.innerHTML = `
-                    <span class="arcade-font text-xs text-white font-bold mb-1">${th.name}</span>
-                    ${th.unlocked ? `
-                        <button onclick="selectTheme('${th.id}')" class="w-full py-1 rounded-xl text-[10px] arcade-font font-bold transition-all ${
-                            isSelected ? 'bg-indigo-600 text-white shadow' : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
-                        }">${isSelected ? 'Active Arena' : 'Select Theme'}</button>
-                    ` : `
-                        <button onclick="buyTheme('${th.id}')" class="w-full py-1 rounded-xl text-[10px] arcade-font font-bold bg-amber-600 hover:bg-amber-500 text-white shadow">Unlock ($${th.price})</button>
-                    `}
+                const div = document.createElement('div');
+                div.className = `p-2.5 rounded-2xl border flex flex-col justify-between items-center text-center ${isSelected ? 'border-indigo-400 bg-indigo-950/60' : 'border-slate-800 bg-slate-800/80'}`;
+                div.innerHTML = `
+                    <span class="arcade-font text-xs text-yellow-300 mb-1">${th.name}</span>
+                    ${th.unlocked ? 
+                        `<button onclick="selectTheme('${th.id}')" class="w-full py-1 rounded-xl text-[10px] arcade-font ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-200'} cursor-pointer">${isSelected ? 'Active' : 'Equip'}</button>` :
+                        `<button onclick="buyTheme('${th.id}')" class="w-full py-1 rounded-xl text-[10px] arcade-font bg-amber-600 hover:bg-amber-500 text-white cursor-pointer">Buy $${th.price}</button>`
+                    }
                 `;
-                themesList.appendChild(card);
+                tContainer.appendChild(div);
             });
 
-            const petsList = document.getElementById('petsList');
-            petsList.innerHTML = '';
-            pets.forEach(p => {
-                const isOwned = p.unlocked;
-                const isActive = activePetIds.includes(p.id);
-                const card = document.createElement('div');
-                card.className = `p-2.5 rounded-2xl border flex items-center justify-between gap-2 ${
-                    isActive ? 'bg-purple-950/80 border-purple-400' : 'bg-slate-800/80 border-slate-700'
-                }`;
-                card.innerHTML = `
-                    <div class="flex items-center gap-2 text-left">
-                        <span class="text-2xl">${p.icon}</span>
+            const pContainer = document.getElementById('petsList');
+            pContainer.innerHTML = '';
+            pets.forEach(pet => {
+                const isEquipped = activePetIds.includes(pet.id);
+                const div = document.createElement('div');
+                div.className = `p-2.5 rounded-2xl border flex items-center justify-between gap-2 ${isEquipped ? 'border-purple-400 bg-purple-950/60' : 'border-slate-800 bg-slate-800/80'}`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">${pet.icon}</span>
                         <div>
-                            <div class="arcade-font text-xs text-purple-300 font-bold">${p.name} <span class="text-[9px] text-slate-400">(${p.title})</span></div>
-                            <div class="text-[9px] text-slate-300 leading-tight">${p.desc}</div>
+                            <h5 class="arcade-font text-xs text-yellow-300">${pet.name}</h5>
+                            <p class="text-[9px] text-slate-300">${pet.desc}</p>
                         </div>
                     </div>
+                    ${pet.unlocked ? 
+                        `<button onclick="toggleEquipPet('${pet.id}')" class="px-3 py-1 rounded-xl text-[10px] arcade-font ${isEquipped ? 'bg-emerald-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-200'} cursor-pointer">${isEquipped ? 'Active' : 'Equip'}</button>` :
+                        pet.isAd ? 
+                        `<button onclick="watchAdForPet('${pet.id}')" class="px-3 py-1 rounded-xl text-[10px] arcade-font bg-purple-600 hover:bg-purple-500 text-white cursor-pointer">Watch Ad</button>` :
+                        `<button onclick="buyPet('${pet.id}')" class="px-3 py-1 rounded-xl text-[10px] arcade-font bg-amber-600 hover:bg-amber-500 text-white cursor-pointer">$${pet.price}</button>`
+                    }
+                `;
+                pContainer.appendChild(div);
+            });
+
+            const hContainer = document.getElementById('handSkinsList');
+            hContainer.innerHTML = '';
+            handSkins.forEach(sk => {
+                const isSelected = currentHandSkinId === sk.id;
+                const div = document.createElement('div');
+                div.className = `p-2.5 rounded-2xl border flex flex-col justify-between items-center text-center ${isSelected ? 'border-indigo-400 bg-indigo-950/60' : 'border-slate-800 bg-slate-800/80'}`;
+                div.innerHTML = `
+                    <span class="text-2xl mb-1">${sk.icon}</span>
+                    <span class="arcade-font text-[11px] text-yellow-300">${sk.name}</span>
+                    <p class="text-[9px] text-slate-400 mb-2">${sk.desc}</p>
+                    ${sk.unlocked ? 
+                        `<button onclick="selectHandSkin('${sk.id}')" class="w-full py-1 rounded-xl text-[10px] arcade-font ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-200'} cursor-pointer">${isSelected ? 'Active' : 'Equip'}</button>` :
+                        `<button onclick="buyHandSkin('${sk.id}')" class="w-full py-1 rounded-xl text-[10px] arcade-font bg-amber-600 hover:bg-amber-500 text-white cursor-pointer">Buy $${sk.price}</button>`
+                    }
+                `;
+                hContainer.appendChild(div);
+            });
+
+            const oContainer = document.getElementById('objectSkinsList');
+            oContainer.innerHTML = '';
+            objectSkins.forEach(sk => {
+                const isSelected = currentObjectSkinId === sk.id;
+                const div = document.createElement('div');
+                div.className = `p-2.5 rounded-2xl border flex flex-col justify-between items-center text-center ${isSelected ? 'border-indigo-400 bg-indigo-950/60' : 'border-slate-800 bg-slate-800/80'}`;
+                div.innerHTML = `
+                    <span class="text-2xl mb-1">${sk.icon}</span>
+                    <span class="arcade-font text-[11px] text-yellow-300">${sk.name}</span>
+                    <p class="text-[9px] text-slate-400 mb-2">${sk.desc}</p>
+                    ${sk.unlocked ? 
+                        `<button onclick="selectObjectSkin('${sk.id}')" class="w-full py-1 rounded-xl text-[10px] arcade-font ${isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-200'} cursor-pointer">${isSelected ? 'Active' : 'Equip'}</button>` :
+                        `<button onclick="buyObjectSkin('${sk.id}')" class="w-full py-1 rounded-xl text-[10px] arcade-font bg-amber-600 hover:bg-amber-500 text-white cursor-pointer">Buy $${sk.price}</button>`
+                    }
+                `;
+                oContainer.appendChild(div);
+            });
+
+            const uContainer = document.getElementById('upgradesList');
+            uContainer.innerHTML = '';
+            upgrades.forEach(upg => {
+                const isMax = upg.maxLvl && upg.level >= upg.maxLvl;
+                const div = document.createElement('div');
+                div.className = 'bg-slate-800/80 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center';
+                div.innerHTML = `
                     <div>
-                        ${isOwned ? `
-                            <button onclick="togglePetActive('${p.id}')" class="px-3 py-1 rounded-xl text-[10px] arcade-font font-bold ${
-                                isActive ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-purple-600 hover:bg-purple-500 text-white'
-                            }">${isActive ? 'Unequip' : 'Equip'}</button>
-                        ` : p.isAd ? `
-                            <button onclick="watchAdForPet('${p.id}')" class="px-2.5 py-1 rounded-xl text-[10px] arcade-font font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow">Watch Ad</button>
-                        ` : `
-                            <button onclick="buyPet('${p.id}')" class="px-2.5 py-1 rounded-xl text-[10px] arcade-font font-bold bg-amber-600 hover:bg-amber-500 text-white shadow">$${p.price}</button>
-                        `}
+                        <h5 class="arcade-font text-xs text-indigo-300">${upg.name} (Lv. ${upg.level}${upg.maxLvl ? '/' + upg.maxLvl : ''})</h5>
+                        <p class="text-[9px] text-slate-400">${upg.desc}</p>
                     </div>
-                `;
-                petsList.appendChild(card);
-            });
-
-            const handSList = document.getElementById('handSkinsList');
-            handSList.innerHTML = '';
-            handSkins.forEach(h => {
-                const isSelected = currentHandSkinId === h.id;
-                const card = document.createElement('div');
-                card.className = `p-2 rounded-xl border flex flex-col items-center text-center ${
-                    isSelected ? 'bg-indigo-950 border-indigo-400' : 'bg-slate-800/80 border-slate-700'
-                }`;
-                card.innerHTML = `
-                    <span class="text-2xl mb-0.5">${h.icon}</span>
-                    <span class="arcade-font text-[10px] text-white font-bold">${h.name}</span>
-                    ${h.unlocked ? `
-                        <button onclick="selectHandSkin('${h.id}')" class="mt-1 w-full py-0.5 rounded text-[9px] arcade-font ${
-                            isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-300'
-                        }">${isSelected ? 'Active' : 'Equip'}</button>
-                    ` : `
-                        <button onclick="buyHandSkin('${h.id}')" class="mt-1 w-full py-0.5 rounded text-[9px] arcade-font bg-amber-600 text-white">Buy ($${h.price})</button>
-                    `}
-                `;
-                handSList.appendChild(card);
-            });
-
-            const objSList = document.getElementById('objectSkinsList');
-            objSList.innerHTML = '';
-            objectSkins.forEach(s => {
-                const isSelected = currentObjectSkinId === s.id;
-                const card = document.createElement('div');
-                card.className = `p-2 rounded-xl border flex flex-col items-center text-center ${
-                    isSelected ? 'bg-indigo-950 border-indigo-400' : 'bg-slate-800/80 border-slate-700'
-                }`;
-                card.innerHTML = `
-                    <span class="text-2xl mb-0.5">${s.icon}</span>
-                    <span class="arcade-font text-[10px] text-white font-bold">${s.name}</span>
-                    ${s.unlocked ? `
-                        <button onclick="selectObjectSkin('${s.id}')" class="mt-1 w-full py-0.5 rounded text-[9px] arcade-font ${
-                            isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-300'
-                        }">${isSelected ? 'Active' : 'Equip'}</button>
-                    ` : `
-                        <button onclick="buyObjectSkin('${s.id}')" class="mt-1 w-full py-0.5 rounded text-[9px] arcade-font bg-amber-600 text-white">Buy ($${s.price})</button>
-                    `}
-                `;
-                objSList.appendChild(card);
-            });
-
-            const upgradesList = document.getElementById('upgradesList');
-            upgradesList.innerHTML = '';
-            upgrades.forEach(u => {
-                const card = document.createElement('div');
-                card.className = 'bg-slate-800/80 p-2.5 rounded-2xl border border-slate-700 flex items-center justify-between gap-2';
-                card.innerHTML = `
-                    <div>
-                        <div class="arcade-font text-xs text-yellow-400 font-bold">${u.name} (Lv. ${u.level})</div>
-                        <div class="text-[9px] text-slate-300">${u.desc}</div>
-                    </div>
-                    <button onclick="upgradeStat('${u.id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white arcade-font text-[10px] px-3 py-1.5 rounded-xl shadow shrink-0 font-bold">
-                        Upgrade ($${Math.round(u.cost)})
+                    <button onclick="buyUpgrade('${upg.id}')" class="px-3 py-1.5 rounded-xl text-[10px] arcade-font ${isMax ? 'bg-slate-700 text-slate-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer'}">
+                        ${isMax ? 'Maxed' : '$' + upg.cost}
                     </button>
                 `;
-                upgradesList.appendChild(card);
+                uContainer.appendChild(div);
             });
         }
 
-        function selectHandSkin(id) {
-            currentHandSkinId = id;
-            playSound('coin');
-            saveGameState();
-            renderShop();
-            updateHUD();
-        }
-
-        function buyHandSkin(id) {
-            const h = handSkins.find(item => item.id === id);
-            if (h && coins >= h.price) {
-                coins -= h.price;
-                h.unlocked = true;
-                currentHandSkinId = id;
-                playSound('coin');
-                updateHUD();
-                saveGameState();
-                renderShop();
-            }
-        }
-
-        function selectObjectSkin(id) {
-            currentObjectSkinId = id;
-            playSound('coin');
-            saveGameState();
-            renderShop();
-        }
-
-        function buyObjectSkin(id) {
-            const s = objectSkins.find(item => item.id === id);
-            if (s && coins >= s.price) {
-                coins -= s.price;
-                s.unlocked = true;
-                currentObjectSkinId = id;
-                playSound('coin');
-                updateHUD();
-                saveGameState();
-                renderShop();
-            }
-        }
-
-        function togglePetActive(petId) {
+        function toggleEquipPet(petId) {
             const pet = pets.find(p => p.id === petId);
             if (!pet || !pet.unlocked) return;
 
-            if (activePetIds.includes(petId)) {
-                activePetIds = activePetIds.filter(id => id !== petId);
-                playSound('stab');
+            const index = activePetIds.indexOf(petId);
+            if (index > -1) {
+                activePetIds.splice(index, 1);
             } else {
                 if (activePetIds.length >= 2) {
-                    showFloatingText("⚠️ Max 2 Pets equipped!", window.innerWidth / 2, 200, "text-red-400");
-                    return;
+                    activePetIds.shift();
                 }
                 activePetIds.push(petId);
-                playSound('coin');
             }
+            playSound('coin');
             saveGameState();
-            updateHUD();
             renderShop();
+            updateHUD();
         }
 
         function buyPet(petId) {
@@ -2161,9 +2119,12 @@ function updateHUD() {
             if (pet && coins >= pet.price && !pet.unlocked) {
                 coins -= pet.price;
                 pet.unlocked = true;
-                togglePetActive(petId);
+                if (activePetIds.length < 2) {
+                    activePetIds.push(petId);
+                }
                 playSound('coin');
                 updateHUD();
+                saveGameState();
                 renderShop();
             }
         }
@@ -2190,104 +2151,68 @@ function updateHUD() {
             }, 1000);
         }
 
+        function closeAdModal() {
+            document.getElementById('adModalOverlay').classList.add('hidden');
+            pendingAdAction = null;
+        }
+
         function finishWatchingAd() {
             document.getElementById('adModalOverlay').classList.add('hidden');
+            if (!pendingAdAction) return;
+
             if (pendingAdAction === 'revive') {
                 hp = maxHp;
                 isGameOver = false;
                 document.getElementById('gameOverOverlay').classList.add('hidden');
                 playSound('heal');
                 updateHUD();
-            } else if (pendingAdAction && pendingAdAction.type === 'pet') {
+            } else if (pendingAdAction.type === 'pet') {
                 const pet = pets.find(p => p.id === pendingAdAction.petId);
                 if (pet) {
                     pet.unlocked = true;
-                    togglePetActive(pet.id);
+                    if (activePetIds.length < 2) {
+                        activePetIds.push(pet.id);
+                    }
                     playSound('coin');
                     updateHUD();
                     renderShop();
                 }
             }
             pendingAdAction = null;
-        }
-
-        function closeAdModal() {
-            document.getElementById('adModalOverlay').classList.add('hidden');
-            pendingAdAction = null;
-        }
-
-        function upgradeStat(upId) {
-            const up = upgrades.find(u => u.id === upId);
-            if (!up) return;
-
-            if (up.maxLvl && up.level >= up.maxLvl) {
-                showFloatingText("⭐ Max Level Reached!", window.innerWidth / 2, 200, "text-yellow-300");
-                return;
-            }
-
-            if (coins >= Math.round(up.cost)) {
-                coins -= Math.round(up.cost);
-                up.level++;
-                up.cost *= up.costMult;
-
-                if (upId === 'damage') projectileDamage = up.level;
-                if (upId === 'coin') coinMultiplier = up.level;
-                if (upId === 'autopilot') autoPopperLevel = up.level;
-                if (upId === 'skill_lightning') skillChainLightningLevel = up.level;
-                if (upId === 'skill_vortex') skillGravityVortexLevel = up.level;
-                if (upId === 'skill_sonic') skillSonicBoomLevel = up.level;
-                if (upId === 'skill_chrono') skillChronoRiftLevel = up.level;
-
-                playSound('coin');
-                updateHUD();
-                renderShop();
-                saveGameState();
-            } else {
-                showFloatingText("❌ Not enough coins!", window.innerWidth / 2, 200, "text-red-400");
-            }
+            saveGameState();
         }
 
         function renderAchievements() {
-            const qList = document.getElementById('questsList');
-            qList.innerHTML = '';
+            const qContainer = document.getElementById('questsList');
+            qContainer.innerHTML = '';
             quests.forEach(q => {
-                const item = document.createElement('div');
-                item.className = 'bg-slate-800/80 p-2.5 rounded-xl border border-slate-700 flex items-center justify-between gap-2';
-                item.innerHTML = `
+                const div = document.createElement('div');
+                div.className = 'bg-slate-800/80 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center';
+                div.innerHTML = `
                     <div>
-                        <div class="arcade-font text-[11px] text-amber-300 font-bold">${q.title}</div>
-                        <div class="text-[9px] text-slate-300">${q.desc} (${q.progress}/${q.target})</div>
+                        <h5 class="arcade-font text-xs text-amber-300">${q.title} (${q.progress}/${q.target})</h5>
+                        <p class="text-[9px] text-slate-400">${q.desc}</p>
                     </div>
-                    <div>
-                        ${q.completed && !q.claimed ? `
-                            <button onclick="claimQuest('${q.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white arcade-font text-[10px] px-2.5 py-1 rounded-lg shadow font-bold">Claim +$${q.rewardCoins}</button>
-                        ` : q.claimed ? `
-                            <span class="text-[9px] text-emerald-400 font-bold arcade-font">Completed ✅</span>
-                        ` : `
-                            <span class="text-[9px] text-slate-400 font-bold arcade-font">In Progress</span>
-                        `}
-                    </div>
+                    <button onclick="claimQuest('${q.id}')" class="px-3 py-1 rounded-xl text-[10px] arcade-font ${q.completed && !q.claimed ? 'bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer' : 'bg-slate-700 text-slate-400 cursor-not-allowed'}">
+                        ${q.claimed ? 'Claimed' : q.completed ? 'Claim +$' + q.rewardCoins : 'In Progress'}
+                    </button>
                 `;
-                qList.appendChild(item);
+                qContainer.appendChild(div);
             });
 
-            const aList = document.getElementById('achievementsList');
-            aList.innerHTML = '';
-            achievements.forEach(a => {
-                const item = document.createElement('div');
-                item.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2 ${
-                    a.unlocked ? 'bg-amber-950/50 border-amber-500/80' : 'bg-slate-800/80 border-slate-700 opacity-70'
-                }`;
-                item.innerHTML = `
+            const aContainer = document.getElementById('achievementsList');
+            aContainer.innerHTML = '';
+            achievements.forEach(ach => {
+                const div = document.createElement('div');
+                div.className = 'bg-slate-800/80 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center';
+                div.innerHTML = `
                     <div>
-                        <div class="arcade-font text-[11px] text-yellow-300 font-bold">🏆 ${a.title}</div>
-                        <div class="text-[9px] text-slate-300">${a.desc}</div>
+                        <h5 class="arcade-font text-xs ${ach.unlocked ? 'text-yellow-300' : 'text-slate-400'}">${ach.title}</h5>
+                        <p class="text-[9px] text-slate-400">${ach.desc} (Reward: +$${ach.rewardCoins})</p>
                     </div>
-                    <div>
-                        <span class="text-[10px] arcade-font font-bold ${a.unlocked ? 'text-emerald-400' : 'text-slate-400'}">${a.unlocked ? 'Unlocked 🎉' : 'Locked'}</span>
-                    </div>
+                    <span class="text-xs font-bold ${ach.unlocked ? 'text-emerald-400' : 'text-slate-500'}">${ach.unlocked ? 'Unlocked ✅' : 'Locked 🔒'}</span>
                 `;
-                aList.appendChild(item);
+                aContainer.appendChild(div);
             });
         }
 
@@ -2301,65 +2226,61 @@ function updateHUD() {
                 updateHUD();
                 renderAchievements();
                 saveGameState();
+                showFloatingText(`🎉 Claimed +$${q.rewardCoins}!`, window.innerWidth / 2, 200, "text-amber-300");
             }
         }
 
-        // Companion pet auto actions loop
         setInterval(() => {
             if (isGameOver || isPaused) return;
-            const layer = document.getElementById('balloonLayer');
-            if (!layer) return;
-            const allBalloons = layer.querySelectorAll('.absolute.rounded-full');
+            spawnBalloon();
+        }, 1250);
 
-            activePetIds.forEach(petId => {
-                if (petId === 'sparky' || petId === 'ad_pixel') {
+        setInterval(() => {
+            if (isGameOver || isPaused) return;
+
+            if (autoPopperLevel > 0) {
+                const layer = document.getElementById('balloonLayer');
+                if (layer) {
+                    const allBalloons = layer.querySelectorAll('.absolute.rounded-full');
                     if (allBalloons.length > 0) {
-                        const randB = allBalloons[Math.floor(Math.random() * allBalloons.length)];
-                        const rect = randB.getBoundingClientRect();
-                        if (randB._popByPet) randB._popByPet(rect.left + 20, rect.top + 20, '⚡');
+                        const targetB = allBalloons[Math.floor(Math.random() * allBalloons.length)];
+                        const rect = targetB.getBoundingClientRect();
+                        if (targetB._popByPet) {
+                            targetB._popByPet(rect.left + 20, rect.top + 20, '🚀');
+                        }
                     }
-                } else if (petId === 'midas' || petId === 'ad_quantum') {
-                    const coinGain = petId === 'midas' ? 5 : 12;
-                    coins += coinGain * coinMultiplier;
-                    maxCoinsEarnedTracker += coinGain * coinMultiplier;
-                    playSound('coin');
-                    updateHUD();
-                } else if (petId === 'buster' || petId === 'ad_phoenix') {
+                }
+            }
+
+            if (activePetIds.length > 0) {
+                const layer = document.getElementById('balloonLayer');
+                if (layer) {
+                    const allBalloons = layer.querySelectorAll('.absolute.rounded-full');
                     if (allBalloons.length > 0) {
-                        allBalloons.forEach(b => {
-                            const rect = b.getBoundingClientRect();
-                            if (b._popByPet) b._popByPet(rect.left + 20, rect.top + 20, petId === 'ad_phoenix' ? '🔥' : '🐾');
+                        activePetIds.forEach(petId => {
+                            if (petId === 'midas' || petId === 'ad_quantum') {
+                                const cGain = petId === 'ad_quantum' ? 12 : 5;
+                                coins += cGain;
+                                maxCoinsEarnedTracker += cGain;
+                                playSound('coin');
+                                showFloatingText(`🪙 Pet +$${cGain}`, window.innerWidth / 2, 180, "text-yellow-300");
+                            } else {
+                                const targetB = allBalloons[Math.floor(Math.random() * allBalloons.length)];
+                                const rect = targetB.getBoundingClientRect();
+                                const petObj = pets.find(p => p.id === petId);
+                                const pIcon = petObj ? petObj.icon : '⚡';
+                                if (targetB._popByPet) {
+                                    targetB._popByPet(rect.left + 20, rect.top + 20, pIcon);
+                                }
+                            }
                         });
                     }
-                } else if (petId === 'ad_titan') {
-                    hp = Math.min(maxHp, hp + 0.2);
-                    updateHUD();
                 }
-            });
+            }
         }, 3000);
 
-        // Auto-thrower drone loop
-        setInterval(() => {
-            if (isGameOver || isPaused || autoPopperLevel <= 0) return;
-            const layer = document.getElementById('balloonLayer');
-            if (!layer) return;
-            const allBalloons = layer.querySelectorAll('.absolute.rounded-full');
-            if (allBalloons.length > 0) {
-                const target = allBalloons[Math.floor(Math.random() * allBalloons.length)];
-                const rect = target.getBoundingClientRect();
-                if (target._popByPet) target._popByPet(rect.left + 20, rect.top + 20, '🤖');
-            }
-        }, Math.max(800, 3000 - (autoPopperLevel * 400)));
-
-        // Main balloon spawn loop
-        setInterval(() => {
-            spawnBalloon();
-        }, 1400);
-
-        // Initial setup
         applyTheme(currentThemeId);
         updateHUD();
-        saveGameState();
     </script>
 </body>
 </html>
